@@ -8,7 +8,7 @@ import { header, ticket } from "./common.js";
 
 const COLOR_NAMES = { sunset: "サンセット", sky: "スカイ", mint: "ミント", rose: "ローズ", gold: "ゴールド" };
 
-export function renderTripForm(data, tripId = null) {
+export function renderTripForm(data, tripId = null, returnTo = "#/") {
   const existing = tripId ? data.trips.find((trip) => trip.id === tripId) : null;
   if (tripId && !existing) return false;
   const today = localDateString();
@@ -19,9 +19,9 @@ export function renderTripForm(data, tripId = null) {
   const previewTrip = () => ({ ...draft, title: document.getElementById("title")?.value || "旅行のなまえ", destination: document.getElementById("destination")?.value || "", startDate: document.getElementById("startDate")?.value || today, endDate: document.getElementById("endDate")?.value || today, color });
 
   appRoot().innerHTML = `<div class="app-shell">
-    ${header(existing ? "旅行を編集" : "新しい旅行", { back: "#/", right: '<button type="button" class="header-save" id="save-top">保存</button>' })}
+    ${header(existing ? "旅行を編集" : "新しい旅行", { back: existing ? returnTo : "#/", right: '<button type="button" class="header-save" id="save-top">保存</button>' })}
     <main class="page-content trip-form">
-      <div class="form-preview" id="form-preview">${ticket(previewTrip())}</div>
+      <div class="form-preview" id="form-preview">${ticket(previewTrip(), { interactive: false })}</div>
       <form id="trip-form" novalidate>
         <div class="form-field"><label for="title">旅行のなまえ *</label><input id="title" name="title" maxlength="80" placeholder="例：京都ひとり旅" value="${escape(draft.title)}" autocomplete="off"><p class="field-error" data-error="title"></p></div>
         <div class="form-field"><label for="destination">行き先</label><input id="destination" name="destination" maxlength="80" placeholder="例：京都" value="${escape(draft.destination)}"><p class="field-error" data-error="destination"></p></div>
@@ -46,7 +46,7 @@ export function renderTripForm(data, tripId = null) {
   };
   const updatePreview = () => {
     const preview = document.getElementById("form-preview");
-    preview.innerHTML = ticket(previewTrip());
+    preview.innerHTML = ticket(previewTrip(), { interactive: false });
     document.getElementById("duration-note").textContent = durationLabel(document.getElementById("startDate").value, document.getElementById("endDate").value);
   };
   const addMember = () => {
@@ -88,7 +88,6 @@ export function renderTripForm(data, tripId = null) {
   function formValues() {
     return { title: document.getElementById("title").value, destination: document.getElementById("destination").value, startDate: document.getElementById("startDate").value, endDate: document.getElementById("endDate").value, members, memberDraft: document.getElementById("member-input").value, budgetText: document.getElementById("budget").value, color, memo: document.getElementById("memo").value, basicPackingChecked: document.getElementById("basic-packing")?.checked ?? null };
   }
-  const previousHash = location.hash;
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
     const values = formValues();
@@ -112,7 +111,7 @@ export function renderTripForm(data, tripId = null) {
     form.dataset.initialSnapshot = initialSnapshot;
     if (existing) {
       toast("保存しました");
-      location.hash = previousHash === `#/trip/${encodeURIComponent(existing.id)}/edit` ? `#/trip/${encodeURIComponent(existing.id)}` : previousHash;
+      location.hash = returnTo;
     } else {
       toast("チケットを発券しました！✈️");
       location.hash = `#/trip/${encodeURIComponent(nextTrip.id)}`;

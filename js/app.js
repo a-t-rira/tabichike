@@ -33,8 +33,9 @@ function route() {
     return;
   }
   if (parts[0] === "trip" && parts.length === 3 && parts[2] === "edit") {
+    const returnTo = lastRoute.startsWith("#/trip/") && !lastRoute.endsWith("/edit") ? lastRoute : "#/";
     lastRoute = hash;
-    const found = renderTripForm(data, parts[1]);
+    const found = renderTripForm(data, parts[1], returnTo);
     if (!found) missingTrip();
     return;
   }

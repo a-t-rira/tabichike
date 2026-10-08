@@ -5,7 +5,7 @@ import { escapeHTML } from "../utils/dom.js";
 export function header(title, { back = "", right = "" } = {}) {
   const cleanBack = back;
   return `<header class="app-header">
-    <div class="header-side">${cleanBack ? `<a class="back-row" href="${cleanBack}" aria-label="戻る"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></a>` : ""}</div>
+    <div class="header-side ${cleanBack ? "has-back" : ""}">${cleanBack ? `<a class="back-row" href="${cleanBack}" aria-label="戻る"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></a>` : ""}</div>
     <h1>${escapeHTML(title)}</h1>
     <div class="header-side">${right}</div>
   </header>`;
@@ -18,7 +18,7 @@ export function tripStatus(trip) {
   return { kind: "past", days: dayDifference(trip.endDate, today) };
 }
 
-export function ticket(trip, { index = 0 } = {}) {
+export function ticket(trip, { index = 0, interactive = true } = {}) {
   const status = tripStatus(trip);
   const planned = trip.items?.length ?? 0;
   const done = trip.items?.filter((item) => item.done).length ?? 0;
@@ -42,13 +42,15 @@ export function ticket(trip, { index = 0 } = {}) {
       : `<span class="s-k">DAYS TO GO</span><span class="s-big">${status.days}</span>`;
   const chips = [`<span class="chip">${escapeHTML(durationLabel(trip.startDate, trip.endDate))}</span>`];
   if (planned && status.kind !== "future") chips.push(`<span class="chip stamp-chip">● スタンプ ${done}/${planned}</span>`);
-  return `<article class="ticket-wrap ${status.kind === "past" ? "is-past" : ""}" style="--tc:var(--c-${colorName});--i:${index}" data-href="#/trip/${encodeURIComponent(trip.id)}" role="link" tabindex="0" aria-label="${escapeHTML(trip.title)}の旅行詳細">
+  const interactionAttributes = interactive ? `data-href="#/trip/${encodeURIComponent(trip.id)}" role="link" tabindex="0"` : "";
+  const actionMenu = interactive ? `<details class="ticket-actions"><summary class="t-more" aria-label="${escapeHTML(trip.title)}のメニュー"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg></summary>
+            <div class="ticket-action-menu"><a href="#/trip/${encodeURIComponent(trip.id)}/edit">編集</a><button type="button" data-copy-trip="${escapeHTML(trip.id)}">複製</button><button type="button" data-delete-trip="${escapeHTML(trip.id)}">削除</button></div>
+          </details>` : "";
+  return `<article class="ticket-wrap ${status.kind === "past" ? "is-past" : ""}" style="--tc:var(--c-${colorName});--i:${index}" ${interactionAttributes} aria-label="${escapeHTML(trip.title)}の旅行詳細">
     <div class="ticket">
       <div class="t-main">
         <div class="t-top"><span class="t-label">BOARDING PASS</span>
-          <details class="ticket-actions"><summary class="t-more" aria-label="${escapeHTML(trip.title)}のメニュー"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg></summary>
-            <div class="ticket-action-menu"><a href="#/trip/${encodeURIComponent(trip.id)}/edit">編集</a><button type="button" data-copy-trip="${escapeHTML(trip.id)}">複製</button><button type="button" data-delete-trip="${escapeHTML(trip.id)}">削除</button></div>
-          </details>
+          ${actionMenu}
         </div>
         <div class="t-dest">${escapeHTML(trip.destination || trip.title)}</div>
         ${trip.destination ? `<div class="t-title">${escapeHTML(trip.title)}</div>` : ""}
