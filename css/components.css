@@ -159,11 +159,13 @@ body:has(.detail-page) { background-color:var(--c-paper);background-image:radial
 .packing-progress,.expense-summary,.expense-breakdown,.expense-day {margin-top:22px;padding:16px;border-radius:14px;background:#fff;box-shadow:0 4px 12px rgba(27,42,74,.06);}
 .packing-progress {position:relative;padding-top:20px;}
 .progress-stamp {position:relative;}
-.progress-stamp.is-complete {padding-right:120px;}
+.progress-overview {display:grid;grid-template-columns:minmax(0,1fr);gap:10px;align-items:start;}
+.progress-overview.is-complete {grid-template-columns:minmax(0,1fr) 150px;gap:12px;}
 .packing-progress strong {display:block;font-size:14px;}
+.progress-overview strong {min-width:0;overflow-wrap:anywhere;}
 .progress-track,.budget-track,.category-track {height:9px;overflow:hidden;margin-top:12px;border-radius:99px;background:var(--c-line);}
 .progress-track span,.budget-track span,.category-track span {display:block;height:100%;border-radius:inherit;background:var(--tc);transition:width .25s ease;}
-.ready-stamp {position:absolute;top:-5px;right:0;padding:5px 9px;border:2px solid var(--c-stamp);border-radius:5px;color:var(--c-stamp);font:17px var(--font-display);letter-spacing:.05em;transform:rotate(-8deg);background:#fff;white-space:nowrap;}
+.ready-stamp {position:relative;justify-self:end;padding:5px 9px;border:2px solid var(--c-stamp);border-radius:5px;color:var(--c-stamp);font:17px var(--font-display);letter-spacing:.05em;transform:rotate(-8deg);background:#fff;white-space:nowrap;}
 .ready-stamp.press {animation:press-ready .35s cubic-bezier(.2,.9,.3,1.2) both;}
 @keyframes press-ready {from{transform:rotate(-8deg) scale(1.8);opacity:0}to{transform:rotate(-8deg) scale(1);opacity:.9}}
 .packing-actions {display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;}
@@ -202,9 +204,10 @@ body:has(.detail-page) { background-color:var(--c-paper);background-image:radial
 .share-link-form input {width:100%;min-width:0;min-height:46px;padding:10px 12px;border:1px solid var(--c-line);border-radius:10px;background:#fff;color:var(--c-navy);font-size:16px;}
 .share-link-form .primary-button {min-width:64px;min-height:46px;padding:8px 14px;}
 .share-link-form .field-error:empty {display:none;}
-.trip-share-dialog {width:min(480px,100vw);max-height:calc(100vh - 20px);}
+.trip-share-dialog {width:min(480px,100vw);max-height:calc(100vh - 20px);padding-right:16px;padding-left:16px;}
 .trip-share-dialog h2 {margin-bottom:12px;}
 .share-ticket-preview {margin-bottom:14px;}
+.trip-share-dialog .share-ticket-preview {--radius:18px;--stub-w:108px;--notch:11px;--f-ja:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",sans-serif;--f-en:"Bebas Neue","Arial Narrow",sans-serif;--f-num:"Space Mono",ui-monospace,monospace;}
 .share-ticket-preview .ticket-wrap {pointer-events:none;cursor:default;animation:none;filter:none;}
 .share-toggles {display:grid;gap:8px;margin:12px 0;}
 .share-toggle {min-height:48px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 12px;border:1px solid var(--c-line);border-radius:12px;background:#fff;font-size:14px;font-weight:700;}

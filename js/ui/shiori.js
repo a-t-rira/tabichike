@@ -9,8 +9,7 @@ const PACKING_CATEGORIES = [["valuables", "貴重品"], ["devices", "電子機�
 const ROUTE_COLORS = { move: "#3BA7E0", sight: "#FF6B3D", food: "#E8A317", stay: "#7B6CD9", other: "#7A7F8C" };
 
 export function renderShiori(trip, { shared = false, sharedAt = "", onImport = null } = {}) {
-  // TODO: SharePayload excludes trip.id, so the shared passport number has no source value.
-  const shortId = String(trip.id || "").slice(0, 8).toUpperCase();
+  const shortId = shared ? sharedPassportNumber(trip, sharedAt) : String(trip.id || "").slice(0, 8).toUpperCase();
   const dates = tripDays(trip);
   const items = trip.items || [];
   const doneCount = items.filter((item) => item.done).length;
@@ -69,6 +68,13 @@ function compareItems(a, b) { return (a.time || "99:99").localeCompare(b.time ||
 function formatLongDate(value) { if (!value) return ""; const [year, month, day] = value.split("-"); return `${year}.${month}.${day}`; }
 function shortDateWithWeekday(value) { const date = new Date(`${value}T00:00:00`); const weekday = ["日", "月", "火", "水", "木", "金", "土"][date.getDay()]; return `<span>${date.getMonth()+1}/${date.getDate()}</span><small>(${weekday})</small>`; }
 function padMrz(value) { return `${value}${"<".repeat(Math.max(0, 44 - value.length))}`; }
+
+function sharedPassportNumber(trip, sharedAt) {
+  const source = `${trip.title}${trip.startDate}${sharedAt}`;
+  let hash = 5381;
+  for (const character of source) hash = (Math.imul(hash, 33) + character.charCodeAt(0)) >>> 0;
+  return hash.toString(16).toUpperCase().padStart(8, "0");
+}
 
 function plainText(trip, dates, items) {
   const lines = [`【${trip.title}】`, `📍${trip.destination || ""}　${formatShortDate(trip.startDate)}〜${formatShortDate(trip.endDate)}　${durationLabel(trip.startDate, trip.endDate)}`, ""];
