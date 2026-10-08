@@ -1,0 +1,460 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>たびチケ ホーム見本</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+<!--
+  ============================================================
+  たびチケ ホーム画面（S1）デザイン見本
+  - 見た目・余白・文字サイズ・アニメーションはこのファイルを正とする
+  - 一番下の「見本用の切替」パネルは確認用。アプリには実装しない
+  - データはダミー。実装では store のデータを使う
+  ============================================================
+-->
+<style>
+:root {
+  --c-navy: #1B2A4A;
+  --c-paper: #FBF7EE;
+  --c-white: #FFFFFF;
+  --c-gray: #7A7F8C;
+  --c-line: #E3DCCB;
+  --c-sunset: #FF6B3D;
+  --c-sky: #3BA7E0;
+  --c-mint: #2EC4A6;
+  --c-rose: #F2668B;
+  --c-gold: #C9A227;
+  --c-stamp: #D7263D;
+  --c-board: #10192E;
+  --c-board-text: #FFC93C;
+  --radius: 18px;
+  --stub-w: 108px;   /* 半券の幅 */
+  --notch: 11px;     /* 切り欠きの半径 */
+  --f-ja: "Zen Kaku Gothic New", "Hiragino Sans", "Yu Gothic", sans-serif;
+  --f-en: "Bebas Neue", "Arial Narrow", sans-serif;
+  --f-num: "Space Mono", ui-monospace, monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+[hidden] { display: none !important; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  font-family: var(--f-ja);
+  color: var(--c-navy);
+  background-color: var(--c-paper);
+  background-image: radial-gradient(rgba(27, 42, 74, .07) 1px, transparent 1.3px);
+  background-size: 18px 18px;
+  min-height: 100vh;
+  padding-bottom: calc(120px + env(safe-area-inset-bottom));
+}
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+.wrap { max-width: 480px; margin: 0 auto; padding: 0 16px; }
+
+/* ---------- ヘッダー ---------- */
+.top { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+.logo { display: flex; align-items: center; gap: 10px; font-weight: 900; font-size: 22px; letter-spacing: .02em; }
+.logo-mark { width: 34px; height: 34px; display: grid; place-items: center; background: var(--c-sunset); border-radius: 10px; transform: rotate(-8deg); box-shadow: 0 3px 0 rgba(27,42,74,.18); }
+.logo-mark svg { width: 20px; height: 20px; transform: rotate(8deg); }
+.icon-btn { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 50%; background: var(--c-white); box-shadow: 0 2px 8px rgba(27,42,74,.08); transition: transform .15s; }
+.icon-btn:active { transform: scale(.94); }
+.icon-btn svg { width: 22px; height: 22px; }
+
+/* ---------- 出発案内板 ---------- */
+.board {
+  margin-top: 4px;
+  background: var(--c-board);
+  border-radius: var(--radius);
+  padding: 16px 18px 18px;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 24px rgba(16, 25, 46, .25);
+  cursor: pointer;
+}
+.board::before { /* 上部の細い帯 */
+  content: ""; position: absolute; inset: 0 0 auto 0; height: 4px;
+  background: repeating-linear-gradient(90deg, var(--c-board-text) 0 18px, transparent 18px 28px);
+  opacity: .9;
+}
+.board-top { display: flex; align-items: center; justify-content: space-between; }
+.board-title {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--c-board-text); color: var(--c-board);
+  border-radius: 4px; padding: 5px 10px 5px 8px;
+  box-shadow: inset 0 -2px 0 rgba(0,0,0,.18);
+}
+.board-title svg { width: 16px; height: 16px; flex: none; }
+.board-title .ja { font-weight: 900; font-size: 14px; letter-spacing: .08em; line-height: 1; }
+.board-title .bar { width: 1px; height: 14px; background: rgba(16,25,46,.35); }
+.board-title .en { font-family: var(--f-en); font-size: 16px; letter-spacing: .1em; line-height: 1; padding-top: 1px; }
+.board-clock { font-family: var(--f-num); font-size: 13px; color: rgba(255,255,255,.55); }
+.board-head { display: flex; justify-content: space-between; margin-top: 14px; font-family: var(--f-en); font-size: 13px; letter-spacing: .14em; color: rgba(255,255,255,.4); border-bottom: 1px solid rgba(255,255,255,.1); padding-bottom: 6px; }
+.board-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-top: 10px; }
+.board-dest { font-size: 26px; font-weight: 900; line-height: 1.2; }
+.board-sub { font-size: 13px; color: rgba(255,255,255,.6); margin-top: 2px; }
+.board-status { font-family: var(--f-num); font-weight: 700; font-size: 12px; color: var(--c-board-text); white-space: nowrap; display: flex; align-items: center; gap: 6px; padding-top: 8px; }
+.board-status .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--c-board-text); }
+.board-status.blink .dot { animation: blink 1s steps(2, start) infinite; }
+@keyframes blink { to { visibility: hidden; } }
+.board-count { display: flex; align-items: flex-end; gap: 12px; margin-top: 16px; }
+.flaps { display: flex; gap: 5px; }
+.flap {
+  position: relative; width: 44px; height: 60px;
+  display: grid; place-items: center;
+  background: linear-gradient(#26345A 50%, #1E2B4B 50%);
+  border-radius: 6px;
+  font-family: var(--f-num); font-weight: 700; font-size: 38px; color: var(--c-board-text);
+  box-shadow: inset 0 -2px 0 rgba(0,0,0,.35);
+}
+.flap::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: rgba(16,25,46,.7); }
+.flap.tick { animation: flip .05s linear; }
+@keyframes flip { 50% { transform: scaleY(.15); } }
+.flaps.small .flap { width: 34px; height: 48px; font-size: 28px; }
+.board-unit { display: flex; flex-direction: column; gap: 4px; padding-bottom: 2px; }
+.board-unit .u-ja { font-size: 26px; font-weight: 900; line-height: 1; color: #fff; }
+.board-unit .u-en { font-family: var(--f-en); font-size: 14px; letter-spacing: .1em; line-height: 1; color: var(--c-board-text); white-space: nowrap; }
+.board-pre { font-size: 15px; font-weight: 700; color: #fff; padding-bottom: 6px; }
+.board-cta { margin-top: 14px; display: inline-flex; align-items: center; gap: 6px; font-weight: 700; font-size: 14px; color: var(--c-board-text); }
+
+/* ---------- セクション見出し ---------- */
+.sec { display: flex; align-items: center; gap: 8px; margin: 30px 2px 12px; }
+.sec h2 { font-size: 17px; font-weight: 900; }
+.count { font-family: var(--f-num); font-size: 12px; font-weight: 700; min-width: 24px; height: 22px; padding: 0 7px; border-radius: 999px; display: inline-grid; place-items: center; background: var(--c-navy); color: #fff; }
+.sec.toggle { width: 100%; text-align: left; }
+.sec.toggle .count { background: var(--c-line); color: var(--c-navy); }
+.chev { width: 18px; height: 18px; margin-left: auto; transition: transform .2s; color: var(--c-gray); }
+.sec.toggle[aria-expanded="true"] .chev { transform: rotate(180deg); }
+.list { display: grid; gap: 14px; }
+.past-list[hidden] { display: none; }
+
+/* ---------- 搭乗券カード ---------- */
+.ticket-wrap {
+  position: relative;
+  filter: drop-shadow(0 8px 14px rgba(27, 42, 74, .13));
+  animation: rise .45s cubic-bezier(.2,.8,.2,1) both;
+  animation-delay: calc(var(--i, 0) * 70ms);
+  cursor: pointer;
+}
+@keyframes rise { from { opacity: 0; transform: translateY(14px); } }
+.ticket-wrap:active .ticket { transform: scale(.985); }
+.ticket {
+  display: flex; min-height: 168px;
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: transform .15s;
+  /* 半券の境目の上下に半円の切り欠き */
+  -webkit-mask:
+    radial-gradient(circle var(--notch) at calc(100% - var(--stub-w)) 0, #0000 98%, #000) top / 100% 51% no-repeat,
+    radial-gradient(circle var(--notch) at calc(100% - var(--stub-w)) 100%, #0000 98%, #000) bottom / 100% 51% no-repeat;
+          mask:
+    radial-gradient(circle var(--notch) at calc(100% - var(--stub-w)) 0, #0000 98%, #000) top / 100% 51% no-repeat,
+    radial-gradient(circle var(--notch) at calc(100% - var(--stub-w)) 100%, #0000 98%, #000) bottom / 100% 51% no-repeat;
+}
+.t-main { flex: 1; min-width: 0; background: var(--c-white); padding: 14px 16px 14px 18px; display: flex; flex-direction: column; }
+.t-top { display: flex; align-items: center; justify-content: space-between; height: 24px; }
+.t-label { font-family: var(--f-en); font-size: 14px; letter-spacing: .14em; color: var(--c-gray); white-space: nowrap; display: flex; align-items: center; gap: 6px; }
+.t-label::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--tc); }
+.t-more { width: 32px; height: 32px; margin-right: -8px; display: grid; place-items: center; border-radius: 50%; color: var(--c-gray); }
+.t-more:active { background: var(--c-paper); }
+.t-more svg { width: 18px; height: 18px; }
+.t-dest { font-size: 30px; font-weight: 900; line-height: 1.15; margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.t-title { font-size: 13px; color: var(--c-gray); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.t-dates { display: flex; align-items: flex-end; gap: 10px; margin-top: auto; padding-top: 12px; }
+.t-k { display: block; font-family: var(--f-en); font-size: 12px; letter-spacing: .14em; color: var(--c-gray); }
+.t-v { font-family: var(--f-num); font-weight: 700; font-size: 19px; line-height: 1.1; }
+.t-v small { font-family: var(--f-ja); font-weight: 700; font-size: 12px; margin-left: 1px; }
+.t-route { flex: 1; height: 2px; margin-bottom: 9px; background: repeating-linear-gradient(90deg, var(--c-line) 0 6px, transparent 6px 10px); position: relative; min-width: 16px; }
+.t-route::after { content: ""; position: absolute; right: -2px; top: -3px; width: 8px; height: 8px; border-radius: 50%; background: var(--tc); }
+.t-chips { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+.chip { font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 999px; background: var(--c-paper); color: var(--c-navy); }
+.chip.stamp-chip { color: var(--c-stamp); background: #FCE9EC; }
+
+.t-stub {
+  width: var(--stub-w); flex: none;
+  background: var(--tc); color: #fff;
+  position: relative;
+  display: flex; flex-direction: column; align-items: center; justify-content: space-between;
+  padding: 18px 8px 14px;
+  text-align: center;
+}
+.t-stub::before { /* 切り取り線 */
+  content: ""; position: absolute; left: -1px; top: calc(var(--notch) + 6px); bottom: calc(var(--notch) + 6px); width: 2px;
+  background: repeating-linear-gradient(180deg, rgba(27,42,74,.35) 0 6px, transparent 6px 11px);
+}
+.s-k { font-family: var(--f-en); font-size: 13px; white-space: nowrap; letter-spacing: .12em; opacity: .9; line-height: 1; }
+.s-big { font-family: var(--f-en); font-size: 64px; line-height: .9; margin: 4px 0; }
+.s-big.word { font-size: 34px; line-height: .95; }
+.barcode { width: 84px; height: 24px; opacity: .92; }
+
+/* 終わった旅行 */
+.is-past .ticket { filter: saturate(.3) brightness(1.02); }
+.is-past .t-dest { color: #4A5570; }
+.stamp {
+  position: absolute; right: calc(var(--stub-w) + 10px); top: 30px;
+  width: 82px; height: 82px; border-radius: 50%;
+  border: 3px solid var(--c-stamp);
+  box-shadow: inset 0 0 0 4px var(--c-white), inset 0 0 0 5.5px var(--c-stamp);
+  color: var(--c-stamp);
+  display: grid; place-content: center; text-align: center;
+  transform: rotate(-12deg);
+  opacity: .88;
+  pointer-events: none;
+}
+.stamp b { font-family: var(--f-en); font-size: 17px; white-space: nowrap; letter-spacing: .06em; line-height: 1; }
+.stamp span { font-family: var(--f-num); font-size: 10px; font-weight: 700; }
+
+/* ---------- FAB ---------- */
+.fab {
+  position: fixed; z-index: 10;
+  right: max(16px, calc((100vw - 480px) / 2 + 16px));
+  bottom: calc(24px + env(safe-area-inset-bottom));
+  width: 60px; height: 60px; border-radius: 50%;
+  background: var(--c-sunset); color: #fff;
+  display: grid; place-items: center;
+  box-shadow: 0 8px 20px rgba(255, 107, 61, .4), 0 2px 0 rgba(27,42,74,.15);
+  transition: transform .15s;
+}
+.fab:active { transform: scale(.94); }
+.fab svg { width: 28px; height: 28px; }
+
+/* ---------- フッター ---------- */
+.foot { margin-top: 48px; text-align: center; font-size: 12px; color: var(--c-gray); line-height: 2; }
+.foot a { color: var(--c-gray); margin: 0 6px; }
+.foot .share { margin-top: 6px; display: inline-flex; align-items: center; gap: 6px; font-weight: 700; font-size: 13px; color: var(--c-navy); padding: 8px 16px; border-radius: 999px; border: 1.5px solid var(--c-navy); background: var(--c-white); }
+
+/* ---------- 見本用の切替（実装しない） ---------- */
+.mock { margin-top: 32px; padding: 12px; border: 1.5px dashed var(--c-gray); border-radius: 12px; font-size: 12px; color: var(--c-gray); }
+.mock div { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.mock button { padding: 6px 10px; border-radius: 999px; background: var(--c-white); border: 1px solid var(--c-line); font-size: 12px; }
+.mock button.on { background: var(--c-navy); color: #fff; border-color: var(--c-navy); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="logo">
+      <span class="logo-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg>
+      </span>
+      たびチケ
+    </div>
+    <button class="icon-btn" aria-label="設定">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+    </button>
+  </header>
+
+  <!-- 出発案内板 -->
+  <section class="board" id="board" aria-live="polite">
+    <div class="board-top">
+      <span class="board-title">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M2.5 19h19v2h-19zM22.07 9.64c-.21-.8-1.04-1.28-1.84-1.06L14.92 10l-6.9-6.43-1.93.51 4.14 7.17-4.97 1.33-1.97-1.54-1.45.39 2.59 4.49L21 11.49c.81-.23 1.28-1.05 1.07-1.85z"/></svg>
+        <span class="ja">出発</span><span class="bar"></span><span class="en">DEPARTURES</span>
+      </span>
+      <span class="board-clock" id="clock">--:--</span>
+    </div>
+    <div class="board-head"><span>DESTINATION</span><span>STATUS</span></div>
+    <div class="board-row">
+      <div>
+        <div class="board-dest" id="bDest"></div>
+        <div class="board-sub" id="bSub"></div>
+      </div>
+      <div class="board-status" id="bStatus"><span class="dot"></span><span id="bStatusText"></span></div>
+    </div>
+    <div class="board-count" id="bCount">
+      <div class="board-pre" id="bPre">あと</div>
+      <div class="flaps" id="flaps"></div>
+      <div class="board-unit" id="bUnit"></div>
+    </div>
+    <div class="board-cta" id="bCta" hidden>次の旅行を計画しよう
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </div>
+  </section>
+
+  <div class="sec"><h2>これからの旅行</h2><span class="count" id="upCount">2</span></div>
+  <div class="list" id="upList"></div>
+
+  <button class="sec toggle" id="pastToggle" aria-expanded="false">
+    <h2>おわった旅行</h2><span class="count">1</span>
+    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+  </button>
+  <div class="list past-list" id="pastList" hidden></div>
+
+  <footer class="foot">
+    つくったのは チップ商会 開発部<br>
+    <a href="https://chipshokai.com" target="_blank" rel="noopener">公式サイト</a>
+    <a href="https://x.com/chip_shokai" target="_blank" rel="noopener">X</a>
+    <a href="https://note.com/chip_shokai" target="_blank" rel="noopener">note</a><br>
+    <button class="share">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>
+      このアプリをシェア
+    </button>
+  </footer>
+
+  <!-- ↓ 見本の確認用。アプリには実装しない -->
+  <div class="mock">
+    見本用の切替（実装しない）：案内板の状態
+    <div id="mockBtns">
+      <button data-s="before" class="on">出発前</button>
+      <button data-s="today">出発当日</button>
+      <button data-s="traveling">旅行中</button>
+      <button data-s="none">予定なし</button>
+    </div>
+  </div>
+</div>
+
+<button class="fab" aria-label="新しい旅行をつくる">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+</button>
+
+<script>
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const WD = ['日','月','火','水','木','金','土'];
+const addDays = (n) => { const d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate() + n); return d; };
+const md = (d) => `${d.getMonth() + 1}/${d.getDate()}`;
+const wd = (d) => `(${WD[d.getDay()]})`;
+const nights = (a, b) => Math.round((b - a) / 864e5);
+const stayLabel = (a, b) => { const n = nights(a, b); return n === 0 ? '日帰り' : `${n}泊${n + 1}日`; };
+
+// ダミーデータ（実装では store から）
+const trips = [
+  { id: 'a1f3c9d2', dest: '京都', title: '京都ひとり旅', start: addDays(5), end: addDays(7), color: 'sunset' },
+  { id: 'b7e21k04', dest: '沖縄', title: '家族で沖縄', start: addDays(32), end: addDays(35), color: 'sky' },
+];
+const past = [
+  { id: 'c9q88x11', dest: '金沢', title: '金沢 食べ歩き', start: addDays(-20), end: addDays(-18), color: 'mint', stamps: [8, 10] },
+];
+
+// id から毎回同じ模様のバーコード
+function barcode(seed) {
+  let h = 0; for (const c of seed) h = (h * 31 + c.charCodeAt(0)) >>> 0;
+  let x = 0; const stops = [];
+  while (x < 84) {
+    h = (h * 1103515245 + 12345) >>> 0;
+    const w = 1 + ((h >>> 16) % 3), g = 1 + ((h >>> 9) % 2);
+    stops.push(`#fff ${x}px ${x + w}px`, `transparent ${x + w}px ${x + w + g}px`);
+    x += w + g;
+  }
+  return `linear-gradient(90deg, ${stops.join(',')})`;
+}
+
+function ticketHTML(t, i, isPast) {
+  const today = addDays(0);
+  const days = nights(today, t.start);
+  let stub;
+  if (isPast) stub = `<span class="s-k">ARRIVED</span><span class="s-big word">${md(t.end)}</span>`;
+  else if (today >= t.start) stub = `<span class="s-k">NOW</span><span class="s-big word">ON<br>TRIP</span>`;
+  else stub = `<span class="s-k">DAYS TO GO</span><span class="s-big">${days}</span>`;
+  const chips = [`<span class="chip">${stayLabel(t.start, t.end)}</span>`];
+  if (t.stamps) chips.push(`<span class="chip stamp-chip">● スタンプ ${t.stamps[0]}/${t.stamps[1]}</span>`);
+  return `
+  <article class="ticket-wrap ${isPast ? 'is-past' : ''}" style="--tc: var(--c-${t.color}); --i:${i}">
+    <div class="ticket">
+      <div class="t-main">
+        <div class="t-top">
+          <span class="t-label">BOARDING PASS</span>
+          <button class="t-more" aria-label="メニュー"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg></button>
+        </div>
+        <div class="t-dest">${t.dest}</div>
+        <div class="t-title">${t.title}</div>
+        <div class="t-dates">
+          <div><span class="t-k">DEPART</span><span class="t-v">${md(t.start)}<small>${wd(t.start)}</small></span></div>
+          <div class="t-route"></div>
+          <div><span class="t-k">RETURN</span><span class="t-v">${md(t.end)}<small>${wd(t.end)}</small></span></div>
+        </div>
+        <div class="t-chips">${chips.join('')}</div>
+      </div>
+      <div class="t-stub">${stub}<span class="barcode" style="background:${barcode(t.id)}"></span></div>
+    </div>
+    ${isPast ? `<div class="stamp"><b>VISITED</b><span>${md(t.end)}</span></div>` : ''}
+  </article>`;
+}
+
+document.getElementById('upList').innerHTML = trips.map((t, i) => ticketHTML(t, i, false)).join('');
+document.getElementById('pastList').innerHTML = past.map((t, i) => ticketHTML(t, i, true)).join('');
+
+const pastToggle = document.getElementById('pastToggle');
+pastToggle.addEventListener('click', () => {
+  const open = pastToggle.getAttribute('aria-expanded') !== 'true';
+  pastToggle.setAttribute('aria-expanded', open);
+  document.getElementById('pastList').hidden = !open;
+});
+
+// 出発案内板のパタパタ
+const CHARS = '0123456789ABCDEFGHJKLMNPRSTUVWXYZ';
+function setFlaps(text, small) {
+  const el = document.getElementById('flaps');
+  el.className = 'flaps' + (small ? ' small' : '');
+  el.innerHTML = '';
+  [...text].forEach((ch, i) => {
+    const f = document.createElement('span');
+    f.className = 'flap';
+    f.textContent = ch;
+    el.appendChild(f);
+    if (reduce || ch === ' ') return;
+    let n = 5 + i * 2;
+    const timer = setInterval(() => {
+      f.classList.remove('tick'); void f.offsetWidth; f.classList.add('tick');
+      if (--n <= 0) { f.textContent = ch; clearInterval(timer); return; }
+      f.textContent = CHARS[(Math.random() * CHARS.length) | 0];
+    }, 50);
+  });
+}
+
+function renderBoard(state) {
+  const t = trips[0];
+  const $ = (id) => document.getElementById(id);
+  const status = $('bStatus');
+  $('bCount').hidden = false; $('bCta').hidden = true; status.hidden = false;
+  status.classList.remove('blink');
+  if (state === 'none') {
+    $('bDest').textContent = 'NO DEPARTURES';
+    $('bSub').textContent = 'これからの旅行はありません';
+    status.hidden = true;
+    $('bCount').hidden = true; $('bCta').hidden = false;
+    return;
+  }
+  $('bDest').textContent = t.dest;
+  if (state === 'before') {
+    $('bSub').textContent = `${t.title} · ${md(t.start)}${wd(t.start)} 発`;
+    $('bStatusText').textContent = 'ON SCHEDULE';
+    $('bPre').hidden = false;
+    setFlaps(String(nights(addDays(0), t.start)));
+    $('bUnit').innerHTML = '<span class="u-ja">日</span><span class="u-en">DAYS TO GO</span>';
+  } else if (state === 'today') {
+    $('bSub').textContent = `${t.title} · いってらっしゃい！`;
+    $('bStatusText').textContent = 'BOARDING';
+    status.classList.add('blink');
+    $('bPre').hidden = true;
+    setFlaps('TODAY', true);
+    $('bUnit').innerHTML = '';
+  } else {
+    $('bSub').textContent = `${t.title} · ${stayLabel(t.start, t.end)}`;
+    $('bStatusText').textContent = 'ON TRIP';
+    $('bPre').hidden = true;
+    setFlaps('2');
+    $('bUnit').innerHTML = `<span class="u-ja">日目</span><span class="u-en">DAY 2 OF ${nights(t.start, t.end) + 1}</span>`;
+  }
+}
+
+document.getElementById('mockBtns').addEventListener('click', (e) => {
+  const b = e.target.closest('button'); if (!b) return;
+  document.querySelectorAll('#mockBtns button').forEach(x => x.classList.toggle('on', x === b));
+  renderBoard(b.dataset.s);
+});
+
+function tickClock() {
+  const d = new Date();
+  document.getElementById('clock').textContent = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+}
+tickClock(); setInterval(tickClock, 30000);
+renderBoard('before');
+</script>
+</body>
+</html>
