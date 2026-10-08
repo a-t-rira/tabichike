@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>たびチケ しおり見本</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+<!--
+  ============================================================
+  たびチケ しおり（S7）デザイン見本
+  - 見た目・余白・文字サイズはこのファイルを正とする（印刷用の @media print も含む）
+  - デザイントークンは design/home-mock.html と共通
+  - データはダミー（旅行が終わった状態。スタンプ 9/12）
+  ============================================================
+-->
+<style>
+:root {
+  --c-navy: #1B2A4A;
+  --c-navy-2: #22355E;
+  --c-paper: #FBF7EE;
+  --c-white: #FFFFFF;
+  --c-gray: #7A7F8C;
+  --c-line: #E3DCCB;
+  --c-sunset: #FF6B3D;
+  --c-gold: #C9A227;
+  --c-gold-2: #E2C15A;
+  --c-stamp: #D7263D;
+  --tc: var(--c-sunset);
+  --f-ja: "Zen Kaku Gothic New", "Hiragino Sans", "Yu Gothic", sans-serif;
+  --f-en: "Bebas Neue", "Arial Narrow", sans-serif;
+  --f-num: "Space Mono", ui-monospace, monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+[hidden] { display: none !important; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  font-family: var(--f-ja);
+  color: var(--c-navy);
+  background-color: var(--c-paper);
+  background-image: radial-gradient(rgba(27, 42, 74, .07) 1px, transparent 1.3px);
+  background-size: 18px 18px;
+  min-height: 100vh;
+  padding-bottom: calc(48px + env(safe-area-inset-bottom));
+}
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+.wrap { max-width: 480px; margin: 0 auto; padding: 0 16px; }
+
+/* ---------- ヘッダー・操作バー ---------- */
+.top { display: grid; grid-template-columns: 44px 1fr 44px; align-items: center; height: 64px; gap: 8px; }
+.top h1 { font-size: 17px; font-weight: 900; text-align: center; }
+.icon-btn { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 50%; background: var(--c-white); box-shadow: 0 2px 8px rgba(27,42,74,.08); }
+.icon-btn svg { width: 22px; height: 22px; }
+.actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+.act {
+  height: 46px; border-radius: 999px;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  font-weight: 700; font-size: 14px;
+  background: var(--c-white); border: 1.5px solid var(--c-navy);
+}
+.act.primary { background: var(--c-navy); color: #fff; }
+.act svg { width: 18px; height: 18px; }
+.act:active { transform: scale(.97); }
+
+.pages { display: grid; gap: 18px; }
+.page {
+  background: var(--c-white); border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(27,42,74,.08);
+  padding: 22px 20px 18px;
+  position: relative;
+}
+.page-no { text-align: center; font-family: var(--f-num); font-size: 10px; color: var(--c-gray); margin-top: 16px; letter-spacing: .2em; }
+
+/* ---------- 1. 表紙（パスポート風） ---------- */
+.cover {
+  aspect-ratio: 1 / 1.4;
+  border-radius: 16px 22px 22px 16px;
+  background:
+    radial-gradient(120% 80% at 30% 10%, rgba(255,255,255,.06), transparent 60%),
+    repeating-linear-gradient(135deg, rgba(255,255,255,.018) 0 2px, transparent 2px 6px),
+    var(--c-navy);
+  color: var(--c-gold-2);
+  display: flex; flex-direction: column; align-items: center; justify-content: space-between;
+  padding: 11% 10% 10%;
+  text-align: center;
+  position: relative;
+  box-shadow: inset 6px 0 0 rgba(0,0,0,.18), 0 14px 30px rgba(27,42,74,.3);
+}
+.cover::before { /* 金の内枠 */
+  content: ""; position: absolute; inset: 14px; border: 1px solid rgba(226,193,90,.35); border-radius: 10px 14px 14px 10px; pointer-events: none;
+}
+.cv-en { font-family: var(--f-en); font-size: 30px; letter-spacing: .22em; line-height: 1; padding-left: .22em; }
+.cv-ja { font-size: 14px; font-weight: 700; letter-spacing: .5em; margin-top: 10px; padding-left: .5em; opacity: .9; }
+.emblem { width: 46%; aspect-ratio: 1; }
+.cv-title { font-size: 26px; font-weight: 900; line-height: 1.35; letter-spacing: .04em; }
+.cv-sub { font-family: var(--f-num); font-size: 11px; margin-top: 10px; opacity: .75; letter-spacing: .1em; }
+
+/* ---------- 2. 情報ページ ---------- */
+.info {
+  background:
+    repeating-radial-gradient(circle at 110% -10%, transparent 0 14px, rgba(46,196,166,.07) 14px 15px),
+    repeating-radial-gradient(circle at -10% 110%, transparent 0 14px, rgba(255,107,61,.06) 14px 15px),
+    var(--c-white);
+  overflow: hidden;
+}
+.info-head { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1.5px solid var(--c-navy); padding-bottom: 8px; }
+.info-head .t { font-family: var(--f-en); font-size: 20px; letter-spacing: .14em; }
+.info-head .t small { font-family: var(--f-ja); font-size: 11px; font-weight: 700; letter-spacing: .1em; margin-left: 6px; }
+.info-head .no { font-family: var(--f-num); font-size: 11px; color: var(--c-gray); }
+.fields { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 16px; margin-top: 16px; }
+.field.full { grid-column: 1 / -1; }
+.f-k { font-family: var(--f-en); font-size: 12px; letter-spacing: .12em; color: var(--c-gray); line-height: 1.2; }
+.f-k small { font-family: var(--f-ja); font-size: 10px; letter-spacing: 0; margin-left: 4px; }
+.f-v { font-weight: 900; font-size: 17px; margin-top: 2px; }
+.f-v.big { font-size: 26px; }
+.f-v.num { font-family: var(--f-num); font-weight: 700; }
+.f-v.num small { font-family: var(--f-ja); font-size: 12px; }
+.mrz {
+  margin-top: 22px; padding-top: 10px; border-top: 1px dashed var(--c-line);
+  font-family: var(--f-num); font-size: 12px; line-height: 1.6; letter-spacing: .1em; color: #4A5570;
+  white-space: nowrap; overflow: hidden;
+}
+.stamp {
+  position: absolute; color: var(--c-stamp);
+  border: 3px solid var(--c-stamp); border-radius: 50%;
+  box-shadow: inset 0 0 0 3px var(--c-white), inset 0 0 0 4.5px var(--c-stamp);
+  display: grid; place-content: center; text-align: center;
+  opacity: .85; pointer-events: none;
+  -webkit-print-color-adjust: exact; print-color-adjust: exact;
+}
+.stamp b { font-family: var(--f-en); font-weight: 400; line-height: 1; white-space: nowrap; }
+.stamp span { font-family: var(--f-num); font-weight: 700; }
+.stamp.bon { width: 100px; height: 100px; right: 12px; top: 44px; transform: rotate(-14deg); }
+.stamp.bon b { font-size: 17px; letter-spacing: .02em; }
+.stamp.bon span { font-size: 10px; margin-top: 3px; }
+.stamp.bon i { font-style: normal; font-size: 9px; font-weight: 700; margin-bottom: 2px; }
+
+/* ---------- 共通のページ見出し ---------- */
+.ph { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.ph .en { font-family: var(--f-en); font-size: 22px; letter-spacing: .12em; line-height: 1; }
+.ph .ja { font-size: 12px; font-weight: 700; color: var(--c-gray); }
+.ph::after { content: ""; flex: 1; height: 1.5px; background: repeating-linear-gradient(90deg, var(--c-line) 0 6px, transparent 6px 10px); }
+
+/* ---------- 3. 旅程 ---------- */
+.s-day + .s-day { margin-top: 18px; }
+.s-dh { display: flex; align-items: baseline; gap: 8px; margin-bottom: 6px; }
+.s-dh .d { font-family: var(--f-en); font-size: 22px; line-height: 1; color: var(--tc); }
+.s-dh .dt { font-family: var(--f-num); font-size: 13px; font-weight: 700; }
+.s-dh .dt small { font-family: var(--f-ja); font-size: 11px; }
+.rows { border-left: 2px dotted rgba(27,42,74,.25); margin-left: 8px; padding-left: 14px; }
+.row { display: grid; grid-template-columns: 54px 1fr auto; gap: 8px; align-items: center; padding: 7px 0; border-bottom: 1px solid #F0EBDF; position: relative; }
+.row:last-child { border-bottom: 0; }
+.row::before { content: ""; position: absolute; left: -20px; top: 50%; width: 10px; height: 10px; margin-top: -5px; border-radius: 50%; background: var(--c-white); border: 2px solid var(--cc, var(--c-gray)); }
+.r-time { font-family: var(--f-num); font-size: 12px; font-weight: 700; }
+.r-time.tbd { font-family: var(--f-ja); font-weight: 400; color: var(--c-gray); font-size: 11px; }
+.r-title { font-size: 14px; font-weight: 700; line-height: 1.35; }
+.r-place { display: block; font-size: 11px; font-weight: 400; color: var(--c-gray); }
+.mini-stamp {
+  width: 40px; height: 40px; border-radius: 50%;
+  border: 2px solid var(--c-stamp); color: var(--c-stamp);
+  box-shadow: inset 0 0 0 2px var(--c-white), inset 0 0 0 3px var(--c-stamp);
+  display: grid; place-items: center;
+  font-family: var(--f-en); font-size: 10px; white-space: nowrap;
+  transform: rotate(-12deg); opacity: .85;
+  -webkit-print-color-adjust: exact; print-color-adjust: exact;
+}
+.free { font-size: 13px; color: var(--c-gray); padding: 8px 0; }
+.collected {
+  margin-top: 18px; display: flex; align-items: center; justify-content: center; gap: 8px;
+  font-weight: 900; font-size: 14px; color: var(--c-stamp);
+  padding: 10px; border-radius: 12px; background: #FCE9EC;
+}
+.collected b { font-family: var(--f-num); font-size: 16px; }
+
+/* ---------- 4. 持ち物 ---------- */
+.pk-groups { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 18px; }
+.pk-g h3 { font-size: 12px; font-weight: 900; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+.pk-g h3::before { content: ""; width: 8px; height: 8px; border-radius: 2px; background: var(--tc); }
+.pk-g li { list-style: none; font-size: 13px; display: flex; align-items: center; gap: 8px; padding: 3px 0; }
+.pk-g li::before { content: ""; width: 14px; height: 14px; flex: none; border: 1.5px solid var(--c-navy); border-radius: 3px; }
+
+/* ---------- 5. 予算 / 6. メモ ---------- */
+.budget { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.b-box { border: 1.5px solid var(--c-line); border-radius: 12px; padding: 10px 12px; }
+.b-box .f-v { font-family: var(--f-num); font-size: 20px; }
+.memo { font-size: 14px; line-height: 1.8; white-space: pre-wrap; background: repeating-linear-gradient(transparent 0 calc(1.8em - 1px), var(--c-line) calc(1.8em - 1px) 1.8em); }
+.credit { text-align: center; font-size: 11px; color: var(--c-gray); margin-top: 22px; }
+
+/* ---------- 印刷（print.css 相当） ---------- */
+@media print {
+  @page { size: A4 portrait; margin: 14mm; }
+  body { background: #fff; padding: 0; }
+  .wrap { max-width: none; padding: 0; }
+  .top, .actions { display: none; }
+  .pages { display: block; }
+  .page { box-shadow: none; border: 1px solid #ccc; border-radius: 8px; margin-bottom: 8mm; break-inside: avoid; }
+  .cover { width: 120mm; margin: 30mm auto 0; box-shadow: none; -webkit-print-color-adjust: exact; print-color-adjust: exact; break-after: page; }
+  .info { break-after: page; background: #fff; }
+  .s-day { break-inside: avoid; }
+  .page-no { display: none; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <button class="icon-btn" aria-label="戻る">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+    </button>
+    <h1>しおり</h1>
+    <span></span>
+  </header>
+
+  <div class="actions">
+    <button class="act primary" onclick="window.print()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8" rx="1"/></svg>
+      印刷・PDF
+    </button>
+    <button class="act">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      テキストでコピー
+    </button>
+  </div>
+
+  <div class="pages">
+
+    <!-- 1. 表紙 -->
+    <section class="cover">
+      <div>
+        <div class="cv-en">TRAVEL PASSPORT</div>
+        <div class="cv-ja">旅のしおり</div>
+      </div>
+      <svg class="emblem" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1.6">
+        <circle cx="50" cy="50" r="46" stroke-width="1"/>
+        <circle cx="50" cy="50" r="32"/>
+        <ellipse cx="50" cy="50" rx="14" ry="32"/>
+        <path d="M18 50h64M22 34h56M22 66h56M50 18v64"/>
+        <path d="M50 4l2.2 4.4L57 9l-3.5 3.3.9 4.7L50 14.8 45.6 17l.9-4.7L43 9l4.8-.6z" fill="currentColor" stroke="none"/>
+        <path d="M30 88h40" stroke-width="1"/>
+      </svg>
+      <div>
+        <div class="cv-title" id="cvTitle">京都ひとり旅</div>
+        <div class="cv-sub" id="cvSub"></div>
+      </div>
+    </section>
+
+    <!-- 2. 情報ページ -->
+    <section class="page info">
+      <div class="info-head">
+        <span class="t">PASSPORT<small>旅券</small></span>
+        <span class="no">No. A1F3C9D2</span>
+      </div>
+      <div class="fields">
+        <div class="field full"><div class="f-k">DESTINATION<small>行き先</small></div><div class="f-v big">京都</div></div>
+        <div class="field"><div class="f-k">DATE OF DEPARTURE<small>出発日</small></div><div class="f-v num" id="fDep"></div></div>
+        <div class="field"><div class="f-k">DATE OF RETURN<small>帰る日</small></div><div class="f-v num" id="fRet"></div></div>
+        <div class="field"><div class="f-k">DURATION<small>日数</small></div><div class="f-v">2泊3日</div></div>
+        <div class="field"><div class="f-k">TRAVELERS<small>メンバー</small></div><div class="f-v">たろう、はなこ</div></div>
+      </div>
+      <div class="stamp bon"><i>たびチケ</i><b>BON VOYAGE</b><span id="bonDate"></span></div>
+      <div class="mrz">P&lt;TRAVEL&lt;&lt;A1F3C9D2&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;<br>TABICHIKE&lt;&lt;KYOTO&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;</div>
+    </section>
+
+    <!-- 3. 旅程 -->
+    <section class="page">
+      <div class="ph"><span class="en">ITINERARY</span><span class="ja">旅程</span></div>
+      <div id="itin"></div>
+      <div class="collected">スタンプ <b>9/12</b> あつめました</div>
+      <div class="page-no">— 3 —</div>
+    </section>
+
+    <!-- 4. 持ち物 -->
+    <section class="page">
+      <div class="ph"><span class="en">CHECKLIST</span><span class="ja">持ち物</span></div>
+      <div class="pk-groups">
+        <div class="pk-g"><h3>貴重品</h3><ul><li>財布</li><li>身分証</li><li>保険証</li><li>家の鍵</li></ul></div>
+        <div class="pk-g"><h3>電子機器</h3><ul><li>スマホ</li><li>充電器</li><li>モバイルバッテリー</li></ul></div>
+        <div class="pk-g"><h3>衣類</h3><ul><li>着替え</li><li>下着</li><li>靴下</li></ul></div>
+        <div class="pk-g"><h3>洗面・衛生</h3><ul><li>歯ブラシ</li><li>スキンケア</li></ul></div>
+        <div class="pk-g"><h3>その他</h3><ul><li>ハンカチ</li><li>折りたたみ傘</li></ul></div>
+      </div>
+      <div class="page-no">— 4 —</div>
+    </section>
+
+    <!-- 5. 予算・6. メモ -->
+    <section class="page">
+      <div class="ph"><span class="en">BUDGET</span><span class="ja">予算</span></div>
+      <div class="budget">
+        <div class="b-box"><div class="f-k">BUDGET<small>予算</small></div><div class="f-v">¥50,000</div></div>
+        <div class="b-box"><div class="f-k">TOTAL<small>いまの合計</small></div><div class="f-v">¥43,260</div></div>
+      </div>
+      <div class="ph" style="margin-top:22px"><span class="en">MEMO</span><span class="ja">メモ</span></div>
+      <div class="memo">雨なら嵐山はやめて京都国立博物館へ。
+帰りの新幹線は17:20。駅弁を買う時間を残しておく。</div>
+      <div class="credit">たびチケでつくりました</div>
+    </section>
+
+  </div>
+</div>
+
+<script>
+const WD = ['日','月','火','水','木','金','土'];
+const addDays = (n) => { const d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate() + n); return d; };
+const md = (d) => `${d.getMonth() + 1}/${d.getDate()}`;
+const ymd = (d) => `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
+const wd = (d) => `(${WD[d.getDay()]})`;
+const s = addDays(-12), e = addDays(-10);
+
+document.getElementById('cvSub').textContent = `${ymd(s)} — ${ymd(e)}`;
+document.getElementById('fDep').innerHTML = `${md(s)}<small>${wd(s)}</small>`;
+document.getElementById('fRet').innerHTML = `${md(e)}<small>${wd(e)}</small>`;
+document.getElementById('bonDate').textContent = ymd(s);
+
+const CC = { move: '#3BA7E0', sight: '#FF6B3D', food: '#E8A317', stay: '#7B6CD9', other: '#7A7F8C' };
+const days = [
+  [['08:12', 'move', 'のぞみ 209号で京都へ', '東京駅 → 京都駅', 1], ['11:00', 'food', 'にしんそば', '四条', 1], ['13:30', 'sight', '清水寺', '東山区', 1], ['18:00', 'stay', '町家の宿にチェックイン', '祇園', 1]],
+  [['08:30', 'food', '宿で朝ごはん', '', 1], ['09:30', 'sight', '伏見稲荷大社', '伏見区', 1], ['12:00', 'food', '錦市場で食べ歩き', '中京区', 1], ['15:00', 'sight', '嵐山・竹林の小径', '右京区', 0], [null, 'other', 'おみやげを買う', '', 1]],
+  [['10:00', 'sight', '金閣寺', '北区', 1], ['13:00', 'food', '湯葉ランチ', '', 0], ['17:20', 'move', 'のぞみで帰る', '京都駅 → 東京駅', 0]],
+];
+document.getElementById('itin').innerHTML = days.map((items, i) => {
+  const d = addDays(-12 + i);
+  return `<div class="s-day">
+    <div class="s-dh"><span class="d">DAY ${i + 1}</span><span class="dt">${md(d)}<small>${wd(d)}</small></span></div>
+    ${items.length ? `<div class="rows">${items.map(([t, c, title, place, done]) => `
+      <div class="row" style="--cc:${CC[c]}">
+        <span class="r-time ${t ? '' : 'tbd'}">${t ?? '未定'}</span>
+        <span class="r-title">${title}${place ? `<span class="r-place">${place}</span>` : ''}</span>
+        ${done ? '<span class="mini-stamp">VISITED</span>' : '<span></span>'}
+      </div>`).join('')}</div>` : '<div class="free">フリー</div>'}
+  </div>`;
+}).join('');
+</script>
+</body>
+</html>
