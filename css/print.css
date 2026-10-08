@@ -1,0 +1,17 @@
+@media screen { /* 印刷用スタイルは印刷時のみ適用 */ }
+@media print {
+  @page { size: A4 portrait; margin: 14mm; }
+  body { background: #fff !important; }
+  .app-header, .app-footer, .fab, .toast, .trip-tabs { display: none !important; }
+  .shiori-shell { width:100% !important;max-width:none !important;min-height:0 !important;margin:0 !important;padding:0 !important;overflow:visible !important; }
+  .shiori-view { width:100% !important;max-width:none !important;margin:0 !important;padding:0 !important;background:#fff !important; }
+  .shiori-view .top,.shiori-view .actions { display:none !important; }
+  .shiori-view .pages { display:block !important; }
+  .shiori-view .page { box-shadow:none !important;border:1px solid #ccc;border-radius:8px;margin-bottom:8mm;break-inside:avoid; }
+  .shiori-view .cover { width:120mm;margin:30mm auto 0;box-shadow:none;-webkit-print-color-adjust:exact;print-color-adjust:exact;break-after:page; }
+  .shiori-view .info { break-after:page;background:#fff; }
+  .shiori-view .s-day { break-inside:avoid; }
+  .shiori-view .page-no { display:none !important; }
+  .shiori-view .stamp.bon,.shiori-view .mini-stamp { -webkit-print-color-adjust:exact;print-color-adjust:exact; }
+  .shiori-view .shiori-end-page,.shiori-view .credit { break-inside:avoid; }
+}
