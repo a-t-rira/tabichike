@@ -7,6 +7,7 @@ import { appRoot } from "./utils/dom.js";
 import { confirmDialog } from "./utils/dialog.js";
 import { renderSettings } from "./ui/settings.js";
 import { renderShiori } from "./ui/shiori.js";
+import { renderSharedTrip } from "./ui/shared-trip.js";
 
 let data;
 let lastRoute = "#/";
@@ -14,6 +15,12 @@ let lastRoute = "#/";
 function route() {
   data = loadData();
   const hash = location.hash || "#/";
+  if (hash.startsWith("#/s/")) {
+    lastRoute = hash;
+    window.onbeforeunload = null;
+    renderSharedTrip(hash.slice(4), data);
+    return;
+  }
   const parts = hash.replace(/^#\/?/, "").split("/").filter(Boolean).map((part) => decodeURIComponent(part));
   if (parts.length === 0) {
     lastRoute = "#/";

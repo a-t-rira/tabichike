@@ -21,6 +21,7 @@ export function createEmptyData() {
   return { schemaVersion: 1, trips: [], updatedAt: new Date().toISOString() };
 }
 
+// Optional Trip.importedFrom is { sharedAt: ISO8601, title } for trips imported from a shared link.
 export function createTrip(values = {}) {
   const now = new Date().toISOString();
   return {

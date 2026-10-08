@@ -3,11 +3,13 @@ import { escapeHTML } from "../utils/dom.js";
 import { formatShortDate, localDateString, dayDifference } from "../utils/date.js";
 import { header } from "./common.js";
 import { toast } from "../utils/toast.js";
+import { showTripShareSheet } from "./share-sheet.js";
 
 const PACKING_CATEGORIES = [["valuables", "貴重品"], ["devices", "電子機器"], ["clothes", "衣類"], ["toiletries", "洗面・衛生"], ["other", "その他"]];
 const ROUTE_COLORS = { move: "#3BA7E0", sight: "#FF6B3D", food: "#E8A317", stay: "#7B6CD9", other: "#7A7F8C" };
 
-export function renderShiori(trip) {
+export function renderShiori(trip, { shared = false, sharedAt = "", onImport = null } = {}) {
+  // TODO: SharePayload excludes trip.id, so the shared passport number has no source value.
   const shortId = String(trip.id || "").slice(0, 8).toUpperCase();
   const dates = tripDays(trip);
   const items = trip.items || [];
@@ -18,6 +20,12 @@ export function renderShiori(trip) {
   const hasBudgetPage = trip.budget != null || showTotal || Boolean(trip.memo?.trim());
   const mrzLineOne = padMrz(`P<TRAVEL<<${shortId}`);
   const mrzLineTwo = padMrz("TABICHIKE<<");
+  const top = shared
+    ? `<header class="top"><a class="icon-btn" href="#/" aria-label="ホームへ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7"/><path d="M5 9v12h14V9M9 21v-7h6v7"/></svg></a><h1>共有された旅行</h1><span></span></header>`
+    : `<header class="top"><a class="icon-btn" href="#/trip/${encodeURIComponent(trip.id)}" aria-label="旅行詳細へ戻る"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></a><h1>しおり</h1><span></span></header>`;
+  const actions = shared
+    ? `<div class="actions shared-actions"><button class="act primary" type="button" data-import-shared>自分のたびチケに取り込む</button><button class="act" type="button" data-print>しおりを印刷・PDF</button></div>`
+    : `<div class="actions"><button class="act primary" type="button" data-print><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5h-2"/><rect x="6" y="14" width="12" height="8" rx="1"/></svg>印刷・PDF</button><button class="act" type="button" data-copy><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>テキストでコピー</button><button class="act share-action" type="button" data-share><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.7 10.6 6.6-4.2M8.7 13.4l6.6 4.2"/></svg>共有</button></div>`;
   const groupedItems = dates.map((date, index) => ({ date, index: index + 1, items: items.filter((item) => item.date === date).sort(compareItems) }));
   const itinerary = groupedItems.map((day) => `<div class="s-day"><div class="s-dh"><span class="d">DAY ${day.index}</span><span class="dt">${escapeHTML(formatShortDate(day.date).split("(")[0])}<small>(${escapeHTML(formatShortDate(day.date).split("(")[1]?.replace(")", "") || "")})</small></span></div>${day.items.length ? `<div class="rows">${day.items.map((item) => `<div class="row" style="--cc:${ROUTE_COLORS[item.category] || ROUTE_COLORS.other}"><span class="r-time ${item.time ? "" : "tbd"}">${item.time ? `${escapeHTML(item.time)}${item.endTime ? `〜${escapeHTML(item.endTime)}` : ""}` : "未定"}</span><span class="r-title">${escapeHTML(item.title)}${item.place ? `<span class="r-place">${escapeHTML(item.place)}</span>` : ""}</span>${item.done ? `<span class="mini-stamp">VISITED</span>` : `<span></span>`}</div>`).join("")}</div>` : `<div class="free">フリー</div>`}</div>`).join("");
   const packing = PACKING_CATEGORIES.map(([key, label]) => {
@@ -28,29 +36,29 @@ export function renderShiori(trip) {
   const budgetMemo = hasBudgetPage ? `<section class="page shiori-end-page">${trip.budget != null || showTotal ? `<div class="ph"><span class="en">BUDGET</span><span class="ja">予算</span></div><div class="budget">${trip.budget != null ? `<div class="b-box"><div class="f-k">BUDGET<small>予算</small></div><div class="f-v">¥${Number(trip.budget).toLocaleString("ja-JP")}</div></div>` : ""}${showTotal ? `<div class="b-box"><div class="f-k">TOTAL<small>いまの合計</small></div><div class="f-v">¥${expensesTotal.toLocaleString("ja-JP")}</div></div>` : ""}</div>` : ""}${trip.memo?.trim() ? `<div class="ph memo-heading"><span class="en">MEMO</span><span class="ja">メモ</span></div><div class="memo">${escapeHTML(trip.memo.trim())}</div>` : ""}<div class="credit">たびチケでつくりました</div></section>` : `<div class="credit shiori-final-credit">たびチケでつくりました</div>`;
 
   appRootMarkup(trip, `
-    <header class="top">
-      <a class="icon-btn" href="#/trip/${encodeURIComponent(trip.id)}" aria-label="旅行詳細へ戻る"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></a>
-      <h1>しおり</h1><span></span>
-    </header>
-    <div class="actions"><button class="act primary" type="button" data-print><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8" rx="1"/></svg>印刷・PDF</button><button class="act" type="button" data-copy><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>テキストでコピー</button></div>
+    ${top}
+    ${shared ? `<div class="share-banner"><strong>✈ 旅行のしおりが届きました</strong><small>共有日 ${escapeHTML(formatLongDate(sharedAt.slice(0, 10)))}</small></div>` : ""}
+    ${actions}
     <div class="pages">
       <section class="cover"><div><div class="cv-en">TRAVEL PASSPORT</div><div class="cv-ja">旅のしおり</div></div><svg class="emblem" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="50" cy="50" r="46" stroke-width="1"/><circle cx="50" cy="50" r="32"/><ellipse cx="50" cy="50" rx="14" ry="32"/><path d="M18 50h64M22 34h56M22 66h56M50 18v64"/><path d="M50 4l2.2 4.4L57 9l-3.5 3.3.9 4.7L50 14.8 45.6 17l.9-4.7L43 9l4.8-.6z" fill="currentColor" stroke="none"/><path d="M30 88h40" stroke-width="1"/></svg><div><div class="cv-title">${escapeHTML(trip.title)}</div><div class="cv-sub">${escapeHTML(formatLongDate(trip.startDate))} — ${escapeHTML(formatLongDate(trip.endDate))}</div></div></section>
       <section class="page info"><div class="info-head"><span class="t">PASSPORT<small>旅券</small></span><span class="no">No. ${escapeHTML(shortId)}</span></div><div class="fields"><div class="field full"><div class="f-k">DESTINATION<small>行き先</small></div><div class="f-v big">${escapeHTML(trip.destination || "")}</div></div><div class="field"><div class="f-k">DATE OF DEPARTURE<small>出発日</small></div><div class="f-v num">${shortDateWithWeekday(trip.startDate)}</div></div><div class="field"><div class="f-k">DATE OF RETURN<small>帰る日</small></div><div class="f-v num">${shortDateWithWeekday(trip.endDate)}</div></div><div class="field"><div class="f-k">DURATION<small>日数</small></div><div class="f-v">${escapeHTML(durationLabel(trip.startDate, trip.endDate))}</div></div>${trip.members?.length ? `<div class="field"><div class="f-k">TRAVELERS<small>メンバー</small></div><div class="f-v">${escapeHTML(trip.members.join("、"))}</div></div>` : ""}</div><div class="stamp bon"><i>たびチケ</i><b>BON VOYAGE</b><span>${escapeHTML(formatLongDate(trip.startDate))}</span></div><div class="mrz">${escapeHTML(mrzLineOne)}<br>${escapeHTML(mrzLineTwo)}</div></section>
       <section class="page shiori-itinerary"><div class="ph"><span class="en">ITINERARY</span><span class="ja">旅程</span></div>${itinerary}${stampSummary}<div class="page-no">— 3 —</div></section>
       <section class="page shiori-packing"><div class="ph"><span class="en">CHECKLIST</span><span class="ja">持ち物</span></div><div class="pk-groups">${packing}</div><div class="page-no">— 4 —</div></section>
       ${budgetMemo}
-    </div>`);
+    </div>`, shared);
 
   document.querySelector("[data-print]").addEventListener("click", () => window.print());
-  document.querySelector("[data-copy]").addEventListener("click", async () => {
+  document.querySelector("[data-copy]")?.addEventListener("click", async () => {
     try { await navigator.clipboard.writeText(plainText(trip, dates, items)); toast("コピーしました"); }
     catch { toast("コピーできませんでした"); }
   });
+  document.querySelector("[data-share]")?.addEventListener("click", () => showTripShareSheet(trip));
+  document.querySelector("[data-import-shared]")?.addEventListener("click", () => onImport?.());
 }
 
-function appRootMarkup(trip, body) {
+function appRootMarkup(trip, body, shared = false) {
   const root = document.getElementById("app");
-  root.innerHTML = `<div class="app-shell shiori-shell" style="--tc:var(--c-${escapeHTML(trip.color || "sunset")})"><div class="wrap shiori-view">${body}</div></div>`;
+  root.innerHTML = `<div class="app-shell shiori-shell${shared ? " is-shared" : ""}" style="--tc:var(--c-${escapeHTML(trip.color || "sunset")})"><div class="wrap shiori-view">${body}</div></div>`;
 }
 
 function tripDays(trip) {

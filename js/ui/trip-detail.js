@@ -6,6 +6,7 @@ import { confirmDialog } from "../utils/dialog.js";
 import { renderItinerary } from "./tab-itinerary.js";
 import { renderPacking } from "./tab-packing.js";
 import { renderExpenses } from "./tab-expenses.js";
+import { showTripShareSheet } from "./share-sheet.js";
 
 const tabs = [["itinerary", "旅程", ""], ["packing", "持ち物", "packing"], ["expenses", "費用", "expenses"]];
 
@@ -25,7 +26,7 @@ export function renderTripDetail(trip, tab = "itinerary", data = null, autoScrol
       <section id="tab-content" class="detail-tab-content"></section>
       <a class="primary-button shiori-link" href="#/trip/${encodeURIComponent(trip.id)}/shiori"><span aria-hidden="true">📖</span> しおりを見る</a>
     </main>
-    <div id="trip-menu-popover" class="trip-menu-popover" hidden><a href="#/trip/${encodeURIComponent(trip.id)}/edit">旅行を編集</a><a href="#/trip/${encodeURIComponent(trip.id)}/shiori">しおりを見る</a><button type="button" id="delete-trip" class="menu-danger">この旅行を削除</button></div>
+    <div id="trip-menu-popover" class="trip-menu-popover" hidden><a href="#/trip/${encodeURIComponent(trip.id)}/edit">旅行を編集</a><button type="button" id="share-trip">旅行を共有</button><a href="#/trip/${encodeURIComponent(trip.id)}/shiori">しおりを見る</a><button type="button" id="delete-trip" class="menu-danger">この旅行を削除</button></div>
   </div>`;
   const container = document.getElementById("tab-content");
   if (tab === "packing") renderPacking(trip, rootData, () => renderTripDetail(trip, tab, rootData, false), container);
@@ -33,6 +34,7 @@ export function renderTripDetail(trip, tab = "itinerary", data = null, autoScrol
   else renderItinerary(trip, rootData, () => renderTripDetail(trip, tab, rootData, false), container, autoScroll);
   const button = document.getElementById("trip-menu");
   button.addEventListener("click", () => { const popover = document.getElementById("trip-menu-popover"); popover.hidden = !popover.hidden; button.setAttribute("aria-expanded", String(!popover.hidden)); });
+  document.getElementById("share-trip").addEventListener("click", () => { document.getElementById("trip-menu-popover").hidden = true; showTripShareSheet(trip); });
   document.getElementById("delete-trip").addEventListener("click", async () => {
     if (await confirmDialog({ title: "この旅行を削除しますか？", message: `「${trip.title}」の旅程・持ち物・費用がすべて消えます。元に戻せません。`, confirmLabel: "削除する", danger: true })) document.dispatchEvent(new CustomEvent("tabichike:delete-trip", { detail: trip.id }));
   });

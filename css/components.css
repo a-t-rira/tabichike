@@ -187,6 +187,40 @@ body:has(.detail-page) { background-color:var(--c-paper);background-image:radial
 .template-list span {float:right;color:var(--c-sunset);}
 .empty-actions {display:flex;flex-wrap:wrap;justify-content:center;gap:8px;}
 .detail-page .empty-state {padding-top:30px;}
+.shiori-view .actions {grid-template-columns:minmax(0,1fr) minmax(0,1.25fr) 64px;gap:6px;}
+.shiori-view .actions .act {min-width:0;gap:6px;padding:0 7px;font-size:12px;white-space:nowrap;}
+.shiori-view .actions .act svg {width:16px;height:16px;}
+.shiori-view .shared-actions {grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);}
+.shiori-view .shared-actions .act {height:auto;min-height:46px;padding:7px 9px;line-height:1.35;white-space:normal;}
+.shiori-view .share-banner {display:grid;gap:4px;margin:0 0 14px;padding:15px 16px;border-radius:14px;background:var(--c-navy);color:#fff;box-shadow:0 4px 12px rgba(27,42,74,.12);}
+.shiori-view .share-banner strong {font-size:15px;font-weight:900;}
+.shiori-view .share-banner small {color:rgba(255,255,255,.72);font:11px var(--font-mono);}
+.shiori-shell.is-shared .stamp,.shiori-shell.is-shared .mini-stamp,.shiori-shell.is-shared .collected {display:none !important;}
+.share-invalid {padding-top:45px;}
+.share-invalid .primary-button {display:inline-flex;align-items:center;justify-content:center;text-decoration:none;}
+.share-link-form>div {display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;}
+.share-link-form input {width:100%;min-width:0;min-height:46px;padding:10px 12px;border:1px solid var(--c-line);border-radius:10px;background:#fff;color:var(--c-navy);font-size:16px;}
+.share-link-form .primary-button {min-width:64px;min-height:46px;padding:8px 14px;}
+.share-link-form .field-error:empty {display:none;}
+.trip-share-dialog {width:min(480px,100vw);max-height:calc(100vh - 20px);}
+.trip-share-dialog h2 {margin-bottom:12px;}
+.share-ticket-preview {margin-bottom:14px;}
+.share-ticket-preview .ticket-wrap {pointer-events:none;cursor:default;animation:none;filter:none;}
+.share-toggles {display:grid;gap:8px;margin:12px 0;}
+.share-toggle {min-height:48px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 12px;border:1px solid var(--c-line);border-radius:12px;background:#fff;font-size:14px;font-weight:700;}
+.share-toggle input {position:absolute;width:1px;height:1px;opacity:0;}
+.share-toggle i {position:relative;width:44px;height:26px;flex:none;border-radius:999px;background:var(--c-line);transition:background .2s;}
+.share-toggle i::after {position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(27,42,74,.2);content:"";transition:transform .2s;}
+.share-toggle input:checked+i {background:var(--c-sunset);}
+.share-toggle input:checked+i::after {transform:translateX(18px);}
+.share-toggle input:focus-visible+i {outline:3px solid rgba(59,167,224,.55);outline-offset:2px;}
+.share-explain {margin:12px 0;color:var(--c-gray);font-size:12px;line-height:1.7;}
+.share-trip-actions {display:grid;gap:8px;}
+.share-trip-actions>a,.share-trip-actions>button {width:100%;min-height:48px;display:flex;align-items:center;justify-content:center;text-align:center;text-decoration:none;}
+.share-trip-actions .share-long-link {margin:4px 0;color:var(--c-gray);font-size:12px;line-height:1.6;}
+.share-trip-actions [hidden] {display:none;}
+.share-dialog-close {width:100%;margin-top:8px;}
+.trip-share-dialog .share-ticket-preview .ticket-wrap.is-past .stamp {display:none;}
 .expense-summary {margin-top:22px;}
 .expense-eyebrow {display:block;color:var(--c-gray);font:14px var(--font-display);letter-spacing:.14em;}
 .expense-total {display:block;margin-top:4px;font:40px/1.1 var(--font-mono);font-weight:700;}
@@ -302,6 +336,7 @@ body:has(.shiori-view) { background-color:var(--c-paper);background-image:radial
 .settings-card .version-label {margin:2px 0 8px;color:var(--c-gray);font:12px var(--font-mono);}
 .settings-actions {display:flex;flex-wrap:wrap;gap:8px;}
 .settings-actions button,.settings-card>.danger-button {min-height:44px;padding:8px 13px;font-size:13px;}
+.share-link-form {display:grid;gap:2px;}
 .settings-links {display:flex;gap:15px;font-size:13px;}
 .settings-links a {color:var(--c-gray);}
 .settings-footer {margin:26px 0 0;color:var(--c-gray);font-size:12px;line-height:2;text-align:center;}

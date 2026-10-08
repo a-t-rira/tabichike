@@ -5,17 +5,29 @@ import { localDateString } from "../utils/date.js";
 import { header } from "./common.js";
 import { confirmDialog } from "../utils/dialog.js";
 import { toast } from "../utils/toast.js";
+import { getShareTokenFromLink } from "../utils/share.js";
 
 export function renderSettings(data) {
   const standalone = matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
   appRoot().innerHTML = `<div class="app-shell settings-shell">${header("設定", { back: "#/" })}<main class="page-content settings-content">
     <section class="settings-card"><h2>データのバックアップ</h2><p>データはこの端末のブラウザの中だけに保存されています。ブラウザのデータを消すと旅行も消えるので、ときどき書き出して控えを取っておきましょう。</p><div class="settings-actions"><button class="secondary-button" type="button" data-export>データを書き出す</button><button class="secondary-button" type="button" data-import>データを読み込む</button><input id="backup-file" type="file" accept="application/json,.json" hidden></div></section>
+    <section class="settings-card"><h2>共有リンクから取り込む</h2><p>ホーム画面に追加したたびチケは、Safariとは別にデータを保存しています。LINEなどで受け取ったリンクをSafariで開いた場合は、ここにリンクを貼り付けると取り込めます。</p><form class="share-link-form"><div><input name="shareLink" aria-label="共有リンクを貼り付け" placeholder="共有リンクを貼り付け"><button class="primary-button" type="submit">開く</button></div><p class="field-error" data-share-link-error aria-live="polite"></p></form></section>
     ${standalone ? "" : `<section class="settings-card"><h2>ホーム画面に追加する方法</h2><p>iPhoneのSafariで開き、共有ボタン →「ホーム画面に追加」を押すと、アプリのように使えます。</p></section>`}
     <section class="settings-card"><h2>すべてのデータを削除</h2><p>保存した旅行と関連データをすべて削除します。</p><button class="danger-button" type="button" data-clear>すべてのデータを削除</button></section>
     <section class="settings-card"><h2>このアプリについて</h2><p>このアプリはチップ商会 開発部（AI社員）がつくりました。</p><p class="version-label">v0.1.0</p><div class="settings-links"><a href="https://chipshokai.com" target="_blank" rel="noopener">公式サイト</a><a href="https://x.com/chip_shokai" target="_blank" rel="noopener">X</a><a href="https://note.com/chip_shokai" target="_blank" rel="noopener">note</a></div></section>
     ${footerMarkup()}
   </main><dialog class="share-sheet" id="settings-share"><h2>このアプリをシェア</h2><form method="dialog"><a data-share-x target="_blank" rel="noopener">Xでシェア</a><a data-share-line target="_blank" rel="noopener">LINEで送る</a><button type="button" data-share-copy>リンクをコピー</button><button class="share-close" value="cancel">閉じる</button></form></dialog></div>`;
   const file = document.getElementById("backup-file");
+  const shareLinkForm = document.querySelector(".share-link-form");
+  shareLinkForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const token = getShareTokenFromLink(shareLinkForm.elements.shareLink.value);
+    const error = document.querySelector("[data-share-link-error]");
+    if (!token) { error.textContent = "たびチケの共有リンクではないようです"; return; }
+    error.textContent = "";
+    location.hash = `#/s/${token}`;
+  });
+  shareLinkForm.elements.shareLink.addEventListener("input", () => { document.querySelector("[data-share-link-error]").textContent = ""; });
   document.querySelector("[data-export]").addEventListener("click", () => exportData(data));
   document.querySelector("[data-import]").addEventListener("click", () => file.click());
   file.addEventListener("change", async () => {
