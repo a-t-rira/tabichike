@@ -9,6 +9,7 @@ const APP_FILES = [
   "./css/home.css",
   "./css/print.css",
   "./js/app.js",
+  "./js/analytics.js",
   "./js/store.js",
   "./js/models.js",
   "./js/ui/common.js",
@@ -57,7 +58,9 @@ self.addEventListener("message", (event) => {
 });
 
 self.addEventListener("fetch", (event) => {
-  if (event.request.method !== "GET" || new URL(event.request.url).origin !== self.location.origin) return;
+  const requestURL = new URL(event.request.url);
+  if (requestURL.hostname === "static.cloudflareinsights.com" || requestURL.hostname === "cloudflareinsights.com" || requestURL.hostname.endsWith(".cloudflareinsights.com")) return;
+  if (event.request.method !== "GET" || requestURL.origin !== self.location.origin) return;
   event.respondWith((async () => {
     const cache = await caches.open(CACHE_NAME);
     const cached = await cache.match(event.request);
