@@ -20,6 +20,8 @@
 }
 @keyframes fade { from { opacity: 0; } }
 .ob-skip { position: absolute; top: calc(14px + env(safe-area-inset-top)); right: 16px; color: rgba(255,255,255,.8); font-size: 14px; font-weight: 700; padding: 8px 12px; }
+.ob :focus:not(:focus-visible) { outline: none; }
+.ob :focus-visible { outline: 2px solid #fff; outline-offset: 3px; border-radius: 12px; }
 
 .ob .track { width: 100%; max-width: 480px; overflow: hidden; touch-action: pan-y; }
 .ob .slides { display: flex; transition: transform .38s cubic-bezier(.2,.8,.2,1); }
@@ -34,6 +36,7 @@
 }
 .ob .pass-top { height: 300px; display: grid; place-items: center; position: relative; background: var(--bg, var(--c-board)); }
 .ob .pass-top::after { /* 切り取り線 */ content: ""; position: absolute; left: 18px; right: 18px; bottom: -1px; height: 2px; background: repeating-linear-gradient(90deg, rgba(27,42,74,.25) 0 7px, transparent 7px 12px); }
+.ob .pass-body { padding: 22px 22px 20px; height: 196px; }
 .ob .pass-label { display: flex; justify-content: space-between; font-family: var(--f-en); font-size: 14px; letter-spacing: .14em; color: var(--c-gray); line-height: 1; }
 .ob .pass-label b { color: var(--c-sunset); font-weight: 400; }
 .ob .pass h2 { font-size: 21px; letter-spacing: -.01em; font-weight: 900; line-height: 1.4; margin-top: 10px; }
@@ -99,5 +102,5 @@
 .ob .b svg { width: 18px; height: 18px; }
 .ob .ob-guide { margin-top: 12px; color: rgba(255,255,255,.75); font-size: 13px; text-decoration: underline; text-underline-offset: 3px; }
 
-@media (max-height: 700px) { .ob .pass-top { height: 200px; }  .ob .flap { width: 44px; height: 58px; font-size: 30px; } }
+@media (max-height: 700px) { .ob .pass-top { height: 200px; } .ob .pass-body { height: 186px; } .ob .flap { width: 44px; height: 58px; font-size: 30px; } }
 @media (prefers-reduced-motion: reduce) { .ob, .ob::before, .ob::after, .ob *, .ob *::before, .ob *::after { animation: none !important; transition: none !important; } }
