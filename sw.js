@@ -1,12 +1,15 @@
-const CACHE_NAME = "tabichike-v0.1.0";
+const CACHE_NAME = "tabichike-v0.2.0";
 const APP_FILES = [
   "./",
   "./index.html",
+  "./guide/",
+  "./guide/index.html",
   "./manifest.webmanifest",
   "./sw.js",
   "./css/base.css",
   "./css/components.css",
   "./css/home.css",
+  "./css/onboarding.css",
   "./css/print.css",
   "./js/app.js",
   "./js/analytics.js",
@@ -14,6 +17,7 @@ const APP_FILES = [
   "./js/models.js",
   "./js/ui/common.js",
   "./js/ui/home.js",
+  "./js/ui/onboarding.js",
   "./js/ui/trip-form.js",
   "./js/ui/trip-detail.js",
   "./js/ui/tab-itinerary.js",

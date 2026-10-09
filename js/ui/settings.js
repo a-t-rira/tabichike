@@ -6,10 +6,12 @@ import { header } from "./common.js";
 import { confirmDialog } from "../utils/dialog.js";
 import { toast } from "../utils/toast.js";
 import { getShareTokenFromLink } from "../utils/share.js";
+import { openTutorial } from "./onboarding.js";
 
 export function renderSettings(data) {
   const standalone = matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
   appRoot().innerHTML = `<div class="app-shell settings-shell">${header("設定", { back: "#/" })}<main class="page-content settings-content">
+    <section class="settings-card"><h2>使い方</h2><div class="settings-actions"><a class="secondary-button" href="/guide/">使い方ガイドを見る</a><button class="secondary-button" type="button" data-reopen-tutorial>チュートリアルをもう一度見る</button></div></section>
     <section class="settings-card"><h2>データのバックアップ</h2><p>データはこの端末のブラウザの中だけに保存されています。ブラウザのデータを消すと旅行も消えるので、ときどき書き出して控えを取っておきましょう。</p><div class="settings-actions"><button class="secondary-button" type="button" data-export>データを書き出す</button><button class="secondary-button" type="button" data-import>データを読み込む</button><input id="backup-file" type="file" accept="application/json,.json" hidden></div></section>
     <section class="settings-card"><h2>共有リンクから取り込む</h2><p>ホーム画面に追加したたびチケは、Safariとは別にデータを保存しています。LINEなどで受け取ったリンクをSafariで開いた場合は、ここにリンクを貼り付けると取り込めます。</p><form class="share-link-form"><div><input name="shareLink" aria-label="共有リンクを貼り付け" placeholder="共有リンクを貼り付け"><button class="primary-button" type="submit">開く</button></div><p class="field-error" data-share-link-error aria-live="polite"></p></form></section>
     ${standalone ? "" : `<section class="settings-card"><h2>ホーム画面に追加する方法</h2><p>iPhoneのSafariで開き、共有ボタン →「ホーム画面に追加」を押すと、アプリのように使えます。</p></section>`}
@@ -18,6 +20,7 @@ export function renderSettings(data) {
     ${footerMarkup()}
   </main><dialog class="share-sheet" id="settings-share"><h2>このアプリをシェア</h2><form method="dialog"><a data-share-x target="_blank" rel="noopener">Xでシェア</a><a data-share-line target="_blank" rel="noopener">LINEで送る</a><button type="button" data-share-copy>リンクをコピー</button><button class="share-close" value="cancel">閉じる</button></form></dialog></div>`;
   const file = document.getElementById("backup-file");
+  document.querySelector("[data-reopen-tutorial]").addEventListener("click", () => openTutorial({ force: true }));
   const shareLinkForm = document.querySelector(".share-link-form");
   shareLinkForm.addEventListener("submit", (event) => {
     event.preventDefault();

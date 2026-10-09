@@ -10,6 +10,7 @@ body:has(.home-page) { background-color: var(--c-paper); background-image: radia
 .home-page .logo-mark { width: 34px; height: 34px; display: grid; place-items: center; background: var(--c-sunset); border-radius: 10px; transform: rotate(-8deg); box-shadow: 0 3px 0 rgba(27,42,74,.18); }
 .home-page .logo-mark svg { width: 20px; height: 20px; transform: rotate(8deg); }
 .home-page .icon-btn { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 50%; color: var(--c-navy); background: var(--c-white); box-shadow: 0 2px 8px rgba(27,42,74,.08); transition: transform .15s; }
+.home-header-actions { display: flex; align-items: center; gap: 8px; }
 .home-page .icon-btn:active { transform: scale(.94); }
 .home-page .icon-btn svg { width: 22px; height: 22px; }
 

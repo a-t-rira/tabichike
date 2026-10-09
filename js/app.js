@@ -8,6 +8,7 @@ import { confirmDialog } from "./utils/dialog.js";
 import { renderSettings } from "./ui/settings.js";
 import { renderShiori } from "./ui/shiori.js";
 import { renderSharedTrip } from "./ui/shared-trip.js";
+import { maybeShowTutorial, markOnboarded } from "./ui/onboarding.js";
 
 let data;
 let lastRoute = "#/";
@@ -16,6 +17,7 @@ function route() {
   data = loadData();
   const hash = location.hash || "#/";
   if (hash.startsWith("#/s/")) {
+    if (data.trips.length) markOnboarded();
     lastRoute = hash;
     window.onbeforeunload = null;
     renderSharedTrip(hash.slice(4), data);
@@ -26,8 +28,10 @@ function route() {
     lastRoute = "#/";
     window.onbeforeunload = null;
     renderHome(data);
+    maybeShowTutorial(data, hash);
     return;
   }
+  if (data.trips.length) markOnboarded();
   if (parts[0] === "trip" && parts[1] === "new" && parts.length === 2) {
     lastRoute = hash;
     renderTripForm(data);
