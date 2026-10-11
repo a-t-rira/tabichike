@@ -43,13 +43,13 @@ export function ticket(trip, { index = 0, interactive = true } = {}) {
   const chips = [`<span class="chip">${escapeHTML(durationLabel(trip.startDate, trip.endDate))}</span>`];
   if (planned && status.kind !== "future") chips.push(`<span class="chip stamp-chip">● スタンプ ${done}/${planned}</span>`);
   const interactionAttributes = interactive ? `data-href="#/trip/${encodeURIComponent(trip.id)}" role="link" tabindex="0"` : "";
-  const actionMenu = interactive ? `<details class="ticket-actions"><summary class="t-more" aria-label="${escapeHTML(trip.title)}のメニュー"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg></summary>
+  const actionMenu = interactive && !trip.collaborative ? `<details class="ticket-actions"><summary class="t-more" aria-label="${escapeHTML(trip.title)}のメニュー"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg></summary>
             <div class="ticket-action-menu"><a href="#/trip/${encodeURIComponent(trip.id)}/edit">編集</a><button type="button" data-copy-trip="${escapeHTML(trip.id)}">複製</button><button type="button" data-delete-trip="${escapeHTML(trip.id)}">削除</button></div>
           </details>` : "";
   return `<article class="ticket-wrap ${status.kind === "past" ? "is-past" : ""}" style="--tc:var(--c-${colorName});--i:${index}" ${interactionAttributes} aria-label="${escapeHTML(trip.title)}の旅行詳細">
     <div class="ticket">
       <div class="t-main">
-        <div class="t-top"><span class="t-label">BOARDING PASS</span>
+        <div class="t-top"><span class="t-label">BOARDING PASS</span>${trip.collaborative ? `<span class="collab-badge" aria-label="みんなで編集する旅行"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16 11a4 4 0 1 0-3.9-4.9A5 5 0 0 1 16 11ZM8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm0 2c-3.3 0-6 1.7-6 3.8V20h12v-2.2C14 15.7 11.3 14 8 14Zm8-.1c-.5 0-1 .1-1.5.2 1.5 1 2.5 2.3 2.5 3.9V20h5v-2.2c0-2.1-2.7-3.9-6-3.9Z"/></svg>みんなで</span>` : ""}
           ${actionMenu}
         </div>
         <div class="t-dest">${escapeHTML(trip.destination || trip.title)}</div>

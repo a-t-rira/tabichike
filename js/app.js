@@ -9,13 +9,21 @@ import { renderSettings } from "./ui/settings.js";
 import { renderShiori } from "./ui/shiori.js";
 import { renderSharedTrip } from "./ui/shared-trip.js";
 import { maybeShowTutorial, markOnboarded } from "./ui/onboarding.js";
+import { enableBetaFromQuery, readCollabState } from "./collab/local.js";
+import { openCollaborativeDetail, stopCollaborativeDetail } from "./ui/collaborative-detail.js";
 
 let data;
 let lastRoute = "#/";
 
 function route() {
+  stopCollaborativeDetail();
   data = loadData();
   const hash = location.hash || "#/";
+  if (hash.startsWith("#/j/")) {
+    lastRoute = hash; window.onbeforeunload = null;
+    import("./ui/join.js").then(({ renderJoin }) => renderJoin(decodeURIComponent(hash.slice(4))));
+    return;
+  }
   if (hash.startsWith("#/s/")) {
     if (data.trips.length) markOnboarded();
     lastRoute = hash;
@@ -51,6 +59,13 @@ function route() {
     return;
   }
   if (parts[0] === "trip" && parts.length >= 2) {
+    const joined = readCollabState().trips.find((candidate) => candidate.id === parts[1]);
+    if (joined) {
+      if (parts[2] === "shiori") { lastRoute = hash; window.onbeforeunload = null; openCollaborativeDetail(parts[1], "shiori"); return; }
+      const tab = parts[2] === "packing" ? "packing" : parts[2] === "expenses" ? "expenses" : "itinerary";
+      lastRoute = hash; window.onbeforeunload = null;
+      openCollaborativeDetail(parts[1], tab); return;
+    }
     const trip = data.trips.find((candidate) => candidate.id === parts[1]);
     if (!trip) { missingTrip(); return; }
     if (parts.length === 3 && parts[2] === "shiori") {
@@ -106,6 +121,7 @@ document.addEventListener("click", async (event) => {
   if (confirmed) { window.onbeforeunload = null; location.hash = link.getAttribute("href"); }
 });
 
+enableBetaFromQuery();
 route();
 
 let serviceWorkerRegistration = null;

@@ -5,6 +5,7 @@ import { confirmDialog } from "../utils/dialog.js";
 import { toast } from "../utils/toast.js";
 import { localDateString } from "../utils/date.js";
 import { departureBoard, ticket } from "./common.js";
+import { homeSummariesRefreshedToday, markHomeSummariesRefreshed, readCollabState, updateTripSummary } from "../collab/local.js";
 
 const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const FLAP_CHARS = "0123456789ABCDEFGHJKLMNPRSTUVWXYZ";
@@ -20,10 +21,18 @@ function ticketEntry(trip, index) {
 
 export function renderHome(data) {
   let currentData = data;
+  const joinedTrips = readCollabState().trips.map((trip) => ({ ...trip, collaborative: true, items: [], packing: [], expenses: [] }));
+  const soloIds = new Set(data.trips.map((trip) => trip.id));
+  const displayTrips = [...data.trips, ...joinedTrips.filter((trip) => !soloIds.has(trip.id))];
   const today = localDateString();
-  const upcoming = data.trips.filter((trip) => trip.endDate >= today).sort((a, b) => a.startDate.localeCompare(b.startDate));
-  const ended = data.trips.filter((trip) => trip.endDate < today).sort((a, b) => b.startDate.localeCompare(a.startDate));
-  const empty = data.trips.length === 0;
+  if (joinedTrips.length && !homeSummariesRefreshedToday(today) && markHomeSummariesRefreshed(today)) {
+    import("../collab/repo.js").then(({ refreshCollaborativeSummaries }) => refreshCollaborativeSummaries(joinedTrips.map((trip) => trip.id)))
+      .then((trips) => { trips.forEach(updateTripSummary); if (location.hash === "#/" && trips.length) renderHome(data); })
+      .catch(() => {});
+  }
+  const upcoming = displayTrips.filter((trip) => trip.endDate >= today).sort((a, b) => a.startDate.localeCompare(b.startDate));
+  const ended = displayTrips.filter((trip) => trip.endDate < today).sort((a, b) => b.startDate.localeCompare(a.startDate));
+  const empty = displayTrips.length === 0;
   clearInterval(clockTimer);
   appRoot().innerHTML = `<div class="app-shell home-page">
     <div class="wrap">
@@ -31,7 +40,7 @@ export function renderHome(data) {
         <div class="logo"><span class="logo-mark">${planeMark}</span><span>たびチケ</span></div>
         <nav class="home-header-actions" aria-label="ヘルプと設定"><a class="icon-btn" href="/guide/" aria-label="使い方">${helpIcon}</a><a class="icon-btn" href="#/settings" aria-label="設定">${settingsIcon}</a></nav>
       </header>
-      ${departureBoard(data.trips)}
+      ${departureBoard(displayTrips)}
       ${empty ? `<section class="empty-state"><div class="empty-illustration" aria-hidden="true">🧳</div><p>まだ旅行がありません。最初のチケットをつくりましょう！</p><a class="primary-button" href="#/trip/new">旅行をつくる</a></section>` : `
         <section aria-labelledby="upcoming-title"><div class="sec"><h2 id="upcoming-title">これからの旅行</h2><span class="count">${upcoming.length}</span></div>
           ${upcoming.length ? `<div class="list">${upcoming.map((trip, index) => ticketEntry(trip, index)).join("")}</div>` : ""}

@@ -15,7 +15,7 @@ const ICONS = {
 };
 const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-export function renderItinerary(trip, data, rerender, target, autoScroll = true) {
+export function renderItinerary(trip, data, rerender, target, autoScroll = true, collaboration = null) {
   const today = localDateString();
   const days = Array.from({ length: dayDifference(trip.startDate, trip.endDate) + 1 }, (_, i) => {
     const d = new Date(`${trip.startDate}T00:00:00`); d.setDate(d.getDate() + i); return localDateString(d);
@@ -28,7 +28,7 @@ export function renderItinerary(trip, data, rerender, target, autoScroll = true)
     const futureToday = date === today ? dayItems.filter((item) => item.time && item.time >= `${String(new Date().getHours()).padStart(2,"0")}:${String(new Date().getMinutes()).padStart(2,"0")}`).sort((a,b) => a.time.localeCompare(b.time))[0] : null;
     return `<section class="day ${date === today ? "is-today" : ""}" data-day="${date}"><div class="day-head"><div class="day-no"><span class="k">DAY</span><span class="n">${index + 1}</span></div><div class="day-date">${escapeHTML(formatShortDate(date))}</div>${date === today ? `<span class="today-badge">今日</span>` : ""}${allDone ? `<span class="day-complete">DAY COMPLETE</span>` : ""}</div>${dayItems.length ? `<div class="timeline">${dayItems.map((item) => itemCard(item, date, item === futureToday, today)).join("")}</div>` : `<div class="empty-day">予定はまだありません<br><button type="button" data-add-item="${date}">＋ この日に追加</button></div>`}</section>`;
   }).join("");
-  const add = (date = null, item = null) => openItemDialog(trip, data, days, date, item, rerender);
+  const add = (date = null, item = null) => openItemDialog(trip, data, days, date, item, rerender, collaboration);
   target.onclick = async (event) => {
     const button = event.target.closest("[data-add-item]"); if (button) { add(button.dataset.addItem || null); return; }
     const stamp = event.target.closest(".go-btn,.visited");
@@ -37,7 +37,14 @@ export function renderItinerary(trip, data, rerender, target, autoScroll = true)
       const removing = item.done; item.done = !item.done;
       const section = stamp.closest(".day"); const sectionItems = items.filter((entry) => entry.date === section.dataset.day);
       const completedNow = !removing && sectionItems.length && sectionItems.every((entry) => entry.done);
-      if (saveData({ ...data, trips: data.trips.map((t) => t.id === trip.id ? trip : t) })) {
+      if (collaboration) {
+        try { await collaboration.saveItem(item); }
+        catch { item.done = removing; toast("いまサーバーが混み合っているため保存できませんでした。時間をおいてお試しください"); rerender(); return; }
+        rerender();
+        if (removing) toast("スタンプを外しました", "元に戻す", async () => { item.done = true; try { await collaboration.saveItem(item); } catch { item.done = false; toast("いまサーバーが混み合っているため保存できませんでした。時間をおいてお試しください"); } rerender(); });
+        else if (completedNow && !reduceMotion) setTimeout(() => document.querySelector(`[data-day="${section.dataset.day}"] .day-complete`)?.classList.add("press"), 750);
+        if (!removing && !reduceMotion) document.querySelector(`.visited[data-id="${item.id}"]`)?.classList.add("press");
+      } else if (saveData({ ...data, trips: data.trips.map((t) => t.id === trip.id ? trip : t) })) {
         rerender();
         if (removing) toast("スタンプを外しました", "元に戻す", () => { item.done = true; if (saveData({ ...data, trips: data.trips.map((t) => t.id === trip.id ? trip : t) })) rerender(); });
         else if (completedNow && !reduceMotion) setTimeout(() => document.querySelector(`[data-day="${section.dataset.day}"] .day-complete`)?.classList.add("press"), 750);
@@ -65,18 +72,19 @@ function itemCard(item, date, isNext, today) {
 
 function placePin() { return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>`; }
 
-async function openItemDialog(trip, data, days, date, item, rerender) {
+async function openItemDialog(trip, data, days, date, item, rerender, collaboration) {
   const dialog = makeSheet(item ? "予定を編集" : "予定を追加");
   const options = days.map((day, index) => `<option value="${day}" ${day === (item?.date || date || (trip.startDate <= localDateString() && trip.endDate >= localDateString() ? localDateString() : days[0]) ) ? "selected" : ""}>${index + 1}日目 ${formatShortDate(day)}</option>`).join("");
   dialog.innerHTML += `<form class="sheet-form"><label>日にち<select name="date">${options}</select></label><div class="form-grid"><label>開始時刻<input name="time" type="time" value="${escapeHTML(item?.time || "")}"></label><label>終了時刻<input name="endTime" type="time" value="${escapeHTML(item?.endTime || "")}" ${item?.time ? "" : "disabled"}></label></div><fieldset><legend>カテゴリ</legend><div class="category-choices">${Object.entries(CATS).map(([key,[name,emoji]]) => `<button type="button" class="category-choice" data-category="${key}" aria-pressed="${(item?.category || "sight") === key}">${emoji}<small>${name}</small></button>`).join("")}</div></fieldset><label>やること<input name="title" maxlength="40" required placeholder="例：清水寺" value="${escapeHTML(item?.title || "")}"></label><label>場所<input name="place" maxlength="60" placeholder="例：京都市東山区" value="${escapeHTML(item?.place || "")}"></label><label>メモ<textarea name="memo" maxlength="200">${escapeHTML(item?.memo || "")}</textarea></label><p class="sheet-error" aria-live="polite"></p><button class="primary-button" type="submit">保存</button>${item ? `<button class="danger-button" type="button" data-remove>削除</button>` : ""}</form>`;
   document.body.append(dialog); dialog.showModal(); const form = dialog.querySelector("form"); let category = item?.category || "sight";
   const timeInput = form.elements.time; timeInput.oninput = () => { form.elements.endTime.disabled = !timeInput.value; if (!timeInput.value) form.elements.endTime.value = ""; };
   dialog.querySelectorAll("[data-category]").forEach((button) => button.onclick = () => { category = button.dataset.category; dialog.querySelectorAll("[data-category]").forEach((b) => b.setAttribute("aria-pressed", String(b === button))); });
-  form.onsubmit = (event) => { event.preventDefault(); const error = !form.elements.title.value.trim() ? "やることを入れてください" : timeInput.value && form.elements.endTime.value && form.elements.endTime.value <= timeInput.value ? "終了時刻は開始時刻より後にしてください" : ""; form.querySelector(".sheet-error").textContent = error; if (error) return;
+  form.onsubmit = async (event) => { event.preventDefault(); const error = !form.elements.title.value.trim() ? "やることを入れてください" : timeInput.value && form.elements.endTime.value && form.elements.endTime.value <= timeInput.value ? "終了時刻は開始時刻より後にしてください" : ""; form.querySelector(".sheet-error").textContent = error; if (error) return;
     const nextItem = { id: item?.id || createId(), date: form.elements.date.value, time: timeInput.value || null, endTime: timeInput.value ? form.elements.endTime.value || null : null, title: form.elements.title.value.trim(), category, place: form.elements.place.value.trim(), memo: form.elements.memo.value.trim(), done: item?.done || false };
-    trip.items = item ? trip.items.map((row) => row.id === item.id ? nextItem : row) : [...trip.items, nextItem]; persist(trip,data,rerender); dialog.close();
+    if (collaboration) { const submit = form.querySelector('[type="submit"]'); submit.disabled = true; try { await collaboration.saveItem(nextItem); dialog.close(); } catch { submit.disabled = false; form.querySelector(".sheet-error").textContent = "いまサーバーが混み合っているため保存できませんでした。時間をおいてお試しください"; } }
+    else { trip.items = item ? trip.items.map((row) => row.id === item.id ? nextItem : row) : [...trip.items, nextItem]; persist(trip,data,rerender); dialog.close(); }
   };
-  form.querySelector("[data-remove]")?.addEventListener("click", async () => { if (await confirmDialog({title:"この予定を削除しますか？", confirmLabel:"削除する", danger:true})) { trip.items = trip.items.filter((row) => row.id !== item.id); persist(trip,data,rerender); dialog.close(); } });
+  form.querySelector("[data-remove]")?.addEventListener("click", async () => { if (await confirmDialog({title:"この予定を削除しますか？", confirmLabel:"削除する", danger:true})) { if (collaboration) { try { await collaboration.deleteItem(item.id); dialog.close(); } catch { form.querySelector(".sheet-error").textContent = "いまサーバーが混み合っているため保存できませんでした。時間をおいてお試しください"; } } else { trip.items = trip.items.filter((row) => row.id !== item.id); persist(trip,data,rerender); dialog.close(); } } });
   dialog.addEventListener("click", (e) => { if (e.target === dialog) dialog.close(); }); dialog.addEventListener("close", () => dialog.remove(), { once:true });
 }
 function persist(trip,data,rerender) { trip.updatedAt = new Date().toISOString(); if (saveData({...data,trips:data.trips.map((t)=>t.id===trip.id?trip:t)})) rerender(); }

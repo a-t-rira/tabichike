@@ -1,4 +1,4 @@
-const CACHE_NAME = "tabichike-v0.2.0";
+const CACHE_NAME = "tabichike-v0.3.0";
 const APP_FILES = [
   "./",
   "./index.html",
@@ -12,6 +12,10 @@ const APP_FILES = [
   "./css/onboarding.css",
   "./css/print.css",
   "./js/app.js",
+  "./js/firebase-config.js",
+  "./js/collab/client.js",
+  "./js/collab/repo.js",
+  "./js/collab/local.js",
   "./js/analytics.js",
   "./js/store.js",
   "./js/models.js",
@@ -27,6 +31,9 @@ const APP_FILES = [
   "./js/ui/settings.js",
   "./js/ui/share-sheet.js",
   "./js/ui/shared-trip.js",
+  "./js/ui/collab-sheet.js",
+  "./js/ui/join.js",
+  "./js/ui/collaborative-detail.js",
   "./js/utils/date.js",
   "./js/utils/dialog.js",
   "./js/utils/dom.js",
@@ -64,6 +71,7 @@ self.addEventListener("message", (event) => {
 self.addEventListener("fetch", (event) => {
   const requestURL = new URL(event.request.url);
   if (requestURL.hostname === "static.cloudflareinsights.com" || requestURL.hostname === "cloudflareinsights.com" || requestURL.hostname.endsWith(".cloudflareinsights.com")) return;
+  if ((requestURL.hostname === "www.gstatic.com" && requestURL.pathname.startsWith("/firebasejs/")) || ["firestore.googleapis.com", "identitytoolkit.googleapis.com", "securetoken.googleapis.com", "firebase.googleapis.com"].includes(requestURL.hostname)) return;
   if (event.request.method !== "GET" || requestURL.origin !== self.location.origin) return;
   event.respondWith((async () => {
     const cache = await caches.open(CACHE_NAME);

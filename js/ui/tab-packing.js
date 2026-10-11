@@ -3,6 +3,7 @@ import { saveData } from "../store.js";
 import { escapeHTML } from "../utils/dom.js";
 import { toast } from "../utils/toast.js";
 import { confirmDialog } from "../utils/dialog.js";
+import { setTripCheck } from "../collab/local.js";
 
 const CATS = { valuables:["👛","貴重品"], devices:["🔌","電子機器"], clothes:["👕","衣類"], toiletries:["🪥","洗面・衛生"], other:["🎒","その他"] };
 const TEMPLATES = {
@@ -13,12 +14,13 @@ const TEMPLATES = {
 };
 const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-export function renderPacking(trip, data, rerender, target) {
+export function renderPacking(trip, data, rerender, target, collaboration = null) {
   trip.packing ||= []; const items = trip.packing; const checked = items.filter((x)=>x.checked).length; const complete = items.length > 0 && checked === items.length;
   target.innerHTML = `<section class="packing-progress"><div class="progress-stamp"><div class="progress-overview ${complete ? "is-complete" : ""}"><strong>${complete ? "準備かんぺき！いつでも出発できます" : `準備 ${checked} / ${items.length}`}</strong>${complete ? `<span class="ready-stamp">READY TO GO!</span>` : ""}</div><div class="progress-track"><span style="width:${items.length ? checked/items.length*100 : 0}%"></span></div></div><div class="packing-actions"><button class="secondary-button" data-templates>テンプレートから追加</button><button class="secondary-button" data-uncheck>チェックを全部外す</button></div>${items.length ? Object.entries(CATS).map(([key,[emoji,label]])=>{const group=items.filter(i=>i.category===key).sort((a,b)=>Number(a.checked)-Number(b.checked));if(!group.length)return "";return `<section class="packing-group"><h2>${emoji} ${label} <small>${group.filter(i=>i.checked).length}/${group.length}</small></h2><ul>${group.map(i=>`<li class="packing-row ${i.checked?"is-checked":""}"><label><input type="checkbox" data-check="${escapeHTML(i.id)}" ${i.checked?"checked":""}><span>${escapeHTML(i.name)}</span></label><details class="item-menu"><summary aria-label="${escapeHTML(i.name)}のメニュー">•••</summary><div><button data-edit="${escapeHTML(i.id)}">編集</button><button data-delete="${escapeHTML(i.id)}">削除</button></div></details></li>`).join("")}</ul></section>`}).join(""):`<div class="empty-state"><div class="empty-illustration" aria-hidden="true">🎒</div><p>持ち物リストをつくって、忘れ物ゼロで出発しましょう！</p><div class="empty-actions"><button class="primary-button" data-basic>基本セットを入れる</button><button class="secondary-button" data-add>自分で追加</button></div></div>`}`;
   const add = (item=null, continuing=false) => itemDialog(trip,data,item,rerender,continuing);
   target.onclick = async (event) => {
-    const check=event.target.closest("[data-check]"); if(check){const item=items.find(i=>i.id===check.dataset.check); const wasComplete=items.length>0&&items.every(i=>i.checked);item.checked=check.checked; const nowComplete=items.every(i=>i.checked); persist(trip,data,rerender); if(nowComplete&&!wasComplete&&!reduced) setTimeout(()=>document.querySelector(".ready-stamp")?.classList.add("press"),0);return;}
+    const check=event.target.closest("[data-check]"); if(check){const item=items.find(i=>i.id===check.dataset.check); const wasComplete=items.length>0&&items.every(i=>i.checked);item.checked=check.checked; const nowComplete=items.every(i=>i.checked); if(collaboration){setTripCheck(trip.id,item.id,item.checked);rerender();}else persist(trip,data,rerender); if(nowComplete&&!wasComplete&&!reduced) setTimeout(()=>document.querySelector(".ready-stamp")?.classList.add("press"),0);return;}
+    if(collaboration)return;
     if(event.target.closest("[data-add]")){add();return;}
     if(event.target.closest("[data-basic]")){applyTemplate(trip,data,"基本セット",rerender);return;}
     if(event.target.closest("[data-templates]")){templateDialog(trip,data,rerender);return;}
@@ -26,7 +28,7 @@ export function renderPacking(trip, data, rerender, target) {
     const edit=event.target.closest("[data-edit]");if(edit){add(items.find(i=>i.id===edit.dataset.edit));return;}
     const remove=event.target.closest("[data-delete]");if(remove){const idx=items.findIndex(i=>i.id===remove.dataset.delete);if(idx<0)return;const [deleted]=items.splice(idx,1);persist(trip,data,rerender);toast("持ち物を削除しました", "元に戻す",()=>{trip.packing.splice(idx,0,deleted);persist(trip,data,rerender);});}
   };
-  const detail=target.closest(".detail-page");if(detail){detail.insertAdjacentHTML("beforeend",`<button class="fab detail-fab" type="button" aria-label="持ち物を追加">＋</button>`);detail.querySelector(".detail-fab").onclick=()=>add();}
+  const detail=target.closest(".detail-page");if(detail&&!collaboration){detail.insertAdjacentHTML("beforeend",`<button class="fab detail-fab" type="button" aria-label="持ち物を追加">＋</button>`);detail.querySelector(".detail-fab").onclick=()=>add();}
 }
 function persist(trip,data,rerender){trip.updatedAt=new Date().toISOString();const next={...data,trips:data.trips.map(t=>t.id===trip.id?trip:t)};if(saveData(next))rerender();}
 function applyTemplate(trip,data,name,rerender){const existing=new Set(trip.packing.map(i=>i.name.trim().toLocaleLowerCase()));const added=TEMPLATES[name].filter(([n])=>!existing.has(n.toLocaleLowerCase())).map(([n,c])=>createPackingItem(n,c));trip.packing.push(...added);persist(trip,data,rerender);toast(`${added.length}件追加しました`);}

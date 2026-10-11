@@ -207,6 +207,23 @@ body:has(.detail-page) { background-color:var(--c-paper);background-image:radial
 .trip-share-dialog {width:min(480px,100vw);max-height:calc(100vh - 20px);padding-right:16px;padding-left:16px;}
 .trip-share-dialog h2 {margin-bottom:12px;}
 .share-ticket-preview {margin-bottom:14px;}
+.collab-badge {display:inline-flex;align-items:center;gap:3px;padding:2px 5px;border:1.5px solid var(--c-navy);border-radius:999px;background:#fff;color:var(--c-navy);font:700 10px/1.2 var(--font-ja);white-space:nowrap;}
+.collab-badge svg {width:11px;height:11px;}
+.beta-label {display:inline-block;color:var(--c-sunset);font:11px var(--font-display);letter-spacing:.06em;}
+.offline-band {padding:7px 14px;background:#FCE9EC;color:var(--c-stamp);font-size:12px;font-weight:700;}
+.collab-updated {display:block;margin-top:3px;}
+.collab-sheet {width:min(480px,100vw);}
+.collab-sheet label,.nickname-form {display:grid;gap:7px;margin:12px 0;font-size:13px;font-weight:700;}
+.collab-sheet input,.nickname-form input {width:100%;min-width:0;min-height:46px;padding:10px 12px;border:1px solid var(--c-line);border-radius:10px;background:#fff;font-size:16px;}
+.collab-sheet .settings-actions {display:grid;}
+.collab-sheet .settings-actions>a,.collab-sheet .settings-actions>button {width:100%;min-height:46px;display:flex;align-items:center;justify-content:center;text-decoration:none;}
+.nickname-form {grid-template-columns:minmax(0,1fr) auto;align-items:center;}
+.is-collaborative .packing-actions,.is-collaborative .item-menu,.is-collaborative .empty-actions,.is-collaborative .budget-link,.is-collaborative [data-add],.is-collaborative [data-basic] {display:none!important;}
+.is-collaborative .expense-row {cursor:default;}
+.join-heading {margin:12px 0 16px;text-align:center;font-size:19px;font-weight:900;}
+.join-ticket {pointer-events:none;}
+.join-form {margin-top:16px;}
+.join-form .secondary-button {min-height:46px;display:flex;align-items:center;justify-content:center;text-decoration:none;}
 .trip-share-dialog .share-ticket-preview {--radius:18px;--stub-w:108px;--notch:11px;--f-ja:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",sans-serif;--f-en:"Bebas Neue","Arial Narrow",sans-serif;--f-num:"Space Mono",ui-monospace,monospace;}
 .share-ticket-preview .ticket-wrap {pointer-events:none;cursor:default;animation:none;filter:none;}
 .share-toggles {display:grid;gap:8px;margin:12px 0;}

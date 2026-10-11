@@ -1,4 +1,4 @@
-if (!location.hash.startsWith("#/s/")) {
+if (!location.hash.startsWith("#/s/") && !location.hash.startsWith("#/j/")) {
   const beacon = document.createElement("script");
   beacon.src = "https://static.cloudflareinsights.com/beacon.min.js";
   beacon.defer = true;
