@@ -1,5 +1,4 @@
 const COLLAB_KEY = "tabichike:collab:v1";
-const BETA_KEY = "tabichike:beta";
 
 function emptyState() {
   return { trips: [], checks: {} };
@@ -88,16 +87,3 @@ export function storeTripChecks(tripId, checks) {
 
 export function homeSummariesRefreshedToday(date) { return readCollabState().homeRefreshDate === date; }
 export function markHomeSummariesRefreshed(date) { const state = readCollabState(); state.homeRefreshDate = date; return writeCollabState(state); }
-
-export function isBetaEnabled() {
-  try { return localStorage.getItem(BETA_KEY) === "1"; } catch { return false; }
-}
-
-export function enableBetaFromQuery() {
-  if (new URLSearchParams(location.search).get("beta") !== "1") return;
-  try { localStorage.setItem(BETA_KEY, "1"); } catch { /* Beta stays off if storage is unavailable. */ }
-}
-
-export function disableBeta() {
-  try { localStorage.removeItem(BETA_KEY); return true; } catch { return false; }
-}
