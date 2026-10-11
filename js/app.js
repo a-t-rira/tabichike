@@ -9,7 +9,7 @@ import { renderSettings } from "./ui/settings.js";
 import { renderShiori } from "./ui/shiori.js";
 import { renderSharedTrip } from "./ui/shared-trip.js";
 import { maybeShowTutorial, markOnboarded } from "./ui/onboarding.js";
-import { enableBetaFromQuery, readCollabState } from "./collab/local.js";
+import { readCollabState } from "./collab/local.js";
 import { openCollaborativeDetail, stopCollaborativeDetail } from "./ui/collaborative-detail.js";
 
 let data;
@@ -121,7 +121,6 @@ document.addEventListener("click", async (event) => {
   if (confirmed) { window.onbeforeunload = null; location.hash = link.getAttribute("href"); }
 });
 
-enableBetaFromQuery();
 route();
 
 let serviceWorkerRegistration = null;

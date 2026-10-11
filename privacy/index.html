@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>プライバシーポリシー｜たびチケ</title>
+<meta name="description" content="旅行アプリ「たびチケ」のプライバシーポリシー。旅行データの保存場所、みんなで編集する機能、アクセス解析、データの削除方法について説明します。">
+<link rel="canonical" href="https://tabichike.chipshokai.com/privacy/">
+<meta name="theme-color" content="#1B2A4A">
+<link rel="icon" href="../assets/icons/icon-192.png">
+<link rel="apple-touch-icon" href="../assets/icons/icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+<!-- Cloudflare Web Analytics -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"365c5ca348c340818b755e40a71db3fb","spa":false}'></script>
+<style>
+:root {
+  --c-navy: #1B2A4A; --c-paper: #FBF7EE; --c-white: #FFFFFF; --c-gray: #6B7180; --c-line: #E3DCCB;
+  --c-sunset: #FF6B3D; --c-stamp: #D7263D; --c-board: #10192E; --c-board-text: #FFC93C;
+  --f-ja: "Zen Kaku Gothic New", "Hiragino Sans", "Yu Gothic", sans-serif;
+  --f-en: "Bebas Neue", "Arial Narrow", sans-serif;
+  --f-num: "Space Mono", ui-monospace, monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  font-family: var(--f-ja); color: var(--c-navy); line-height: 1.9; font-size: 15.5px;
+  background-color: var(--c-paper);
+  background-image: radial-gradient(rgba(27, 42, 74, .07) 1px, transparent 1.3px); background-size: 18px 18px;
+}
+a { color: inherit; }
+.wrap { max-width: 680px; margin: 0 auto; padding: 0 16px; }
+.top { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+.logo { display: flex; align-items: center; gap: 10px; font-weight: 900; font-size: 20px; text-decoration: none; }
+.logo-mark { width: 32px; height: 32px; display: grid; place-items: center; background: var(--c-sunset); border-radius: 9px; transform: rotate(-8deg); box-shadow: 0 3px 0 rgba(27,42,74,.18); }
+.logo-mark svg { width: 18px; height: 18px; transform: rotate(8deg); }
+.open-app { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; font-size: 14px; text-decoration: none; padding: 8px 14px; border-radius: 999px; background: var(--c-navy); color: #fff; }
+.hero { margin-top: 6px; background: var(--c-board); color: #fff; border-radius: 20px; padding: 20px; position: relative; overflow: hidden; }
+.hero::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 4px; background: repeating-linear-gradient(90deg, var(--c-board-text) 0 18px, transparent 18px 28px); }
+.plate { display: inline-flex; align-items: center; gap: 8px; background: var(--c-board-text); color: var(--c-board); border-radius: 4px; padding: 5px 10px; font-weight: 900; font-size: 13px; line-height: 1; }
+.plate .en { font-family: var(--f-en); font-weight: 400; font-size: 15px; letter-spacing: .1em; }
+.plate .bar { width: 1px; height: 13px; background: rgba(16,25,46,.35); }
+.hero h1 { font-size: 24px; font-weight: 900; margin-top: 14px; line-height: 1.5; }
+.hero p { font-size: 14px; color: rgba(255,255,255,.85); margin-top: 6px; }
+.summary { margin-top: 18px; background: var(--c-white); border-radius: 16px; padding: 18px; box-shadow: 0 4px 14px rgba(27,42,74,.06); }
+.summary h2 { font-family: var(--f-en); font-weight: 400; font-size: 18px; letter-spacing: .14em; color: var(--c-gray); line-height: 1; margin-bottom: 10px; }
+.summary ul { list-style: none; display: grid; gap: 8px; }
+.summary li { position: relative; padding-left: 26px; font-weight: 700; }
+.summary li::before { content: "✓"; position: absolute; left: 0; top: 0; color: var(--c-sunset); font-weight: 900; }
+section { margin-top: 30px; }
+section h2 { font-size: 18px; font-weight: 900; display: flex; align-items: baseline; gap: 10px; margin-bottom: 8px; line-height: 1.5; }
+section h2 .no { font-family: var(--f-num); font-size: 13px; color: var(--c-sunset); font-weight: 700; }
+section p + p, section p + ul, section ul + p { margin-top: 8px; }
+section ul.dots { list-style: none; display: grid; gap: 6px; }
+section ul.dots li { position: relative; padding-left: 16px; }
+section ul.dots li::before { content: ""; position: absolute; left: 2px; top: .8em; width: 6px; height: 6px; border-radius: 50%; background: var(--c-navy); }
+table { width: 100%; border-collapse: collapse; font-size: 14px; background: var(--c-white); border-radius: 12px; overflow: hidden; box-shadow: 0 3px 10px rgba(27,42,74,.05); }
+th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--c-line); vertical-align: top; }
+tr:last-child th, tr:last-child td { border-bottom: 0; }
+th { font-weight: 900; width: 34%; background: #FDFBF5; }
+.note { margin-top: 10px; font-size: 14px; background: #FFF6E5; border-left: 4px solid var(--c-board-text); border-radius: 8px; padding: 10px 12px; line-height: 1.75; }
+.foot { margin-top: 44px; padding-bottom: calc(40px + env(safe-area-inset-bottom)); text-align: center; font-size: 12px; color: var(--c-gray); line-height: 2; }
+.foot a { margin: 0 6px; }
+.dates { font-family: var(--f-num); font-size: 12px; color: var(--c-gray); margin-top: 28px; }
+@media (max-width: 520px) {
+  table, tbody, tr, th, td { display: block; width: auto; }
+  tr { border-bottom: 1px solid var(--c-line); }
+  th, td { border: 0; }
+  th { padding-bottom: 0; background: transparent; color: var(--c-sunset); }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a class="logo" href="../">
+      <span class="logo-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg></span>
+      たびチケ
+    </a>
+    <a class="open-app" href="../">アプリを開く →</a>
+  </header>
+
+  <main>
+    <div class="hero">
+      <span class="plate">規約<span class="bar"></span><span class="en">PRIVACY</span></span>
+      <h1>プライバシーポリシー</h1>
+      <p>旅行アプリ「たびチケ」（以下「本アプリ」）で、どんな情報をどこに保存し、どう扱うかを説明します。</p>
+    </div>
+
+    <div class="summary">
+      <h2>IN SHORT</h2>
+      <ul>
+        <li>会員登録はなく、名前やメールアドレスは集めません</li>
+        <li>ひとりで使う旅行は、あなたの端末の中だけに保存されます</li>
+        <li>「みんなで編集」にした旅行だけ、サーバー（Google Firebase）に保存されます</li>
+        <li>アクセス解析は Cookie を使わず、旅行の内容は送りません</li>
+        <li>旅行の内容を広告や販売に使うことはありません</li>
+      </ul>
+    </div>
+
+    <section>
+      <h2><span class="no">01</span>運営者</h2>
+      <p>本アプリは「チップ商会」が運営しています。お問い合わせは <a href="https://x.com/chip_shokai" target="_blank" rel="noopener">X（@chip_shokai）</a> のダイレクトメッセージで受け付けています。</p>
+    </section>
+
+    <section>
+      <h2><span class="no">02</span>ひとりで使う旅行のデータ</h2>
+      <p>旅行のなまえ・日程・旅程・持ち物・費用・メモなど、本アプリに入力した内容は、通常は <b>お使いの端末のブラウザの中（localStorage）だけ</b> に保存されます。運営者のサーバーには送信されず、運営者が見ることもできません。</p>
+      <p>ブラウザのデータを消すと、保存した旅行も消えます。端末の買い替えなどに備えて、設定の「データを書き出す」で控えを取ってください。</p>
+    </section>
+
+    <section>
+      <h2><span class="no">03</span>「みんなで編集」にした旅行のデータ</h2>
+      <p>旅行を「みんなで編集」にすると、一緒に編集できるように、その旅行の内容が Google が提供する Firebase（Cloud Firestore）に保存されます。保存場所は東京リージョン（asia-northeast1）です。</p>
+      <table>
+        <tr><th>保存するもの</th><td>旅行のなまえ・行き先・日程・一緒に行く人の名前・予算・メモ、旅程、持ち物リスト、費用、「行った！」スタンプ、ニックネーム（最後に変更した人の表示用）、変更日時</td></tr>
+        <tr><th>保存しないもの</th><td>持ち物のチェック状態（各自の端末にだけ保存）、ひとりで使っている旅行</td></tr>
+        <tr><th>端末を区別する情報</th><td>Firebase Authentication の匿名ログインで自動発行されるID。旅行をつくった人を判別するためだけに使い、個人を特定する情報とは結びつけません</td></tr>
+      </table>
+      <p class="note"><b>招待リンクについて：</b>招待リンクを知っている人は、だれでもその旅行を見たり編集したりできます。リンクを送る相手には十分ご注意ください。住所や電話番号など、他人に見られて困る情報は入力しないことをおすすめします。</p>
+    </section>
+
+    <section>
+      <h2><span class="no">04</span>共有リンク</h2>
+      <p>「旅行を共有」で作るリンクには、旅行の内容がリンクの中（URLの「#」より後ろ）に入っています。この部分はサーバーに送られず、運営者のもとには保存されません。ただし、リンクを受け取った人はだれでも内容を見られます。</p>
+    </section>
+
+    <section>
+      <h2><span class="no">05</span>アクセス解析</h2>
+      <p>本アプリとこのサイトでは、閲覧数を知るために Cloudflare, Inc. の Cloudflare Web Analytics を使っています。Cookie は使わず、ページの閲覧数などを集計するもので、旅行の内容は送信しません。共有リンク・招待リンクで開いたときは、アクセス解析を読み込みません。</p>
+    </section>
+
+    <section>
+      <h2><span class="no">06</span>外部サービス</h2>
+      <ul class="dots">
+        <li>Google Firebase（Cloud Firestore・Authentication）：「みんなで編集」した旅行の保存と、匿名ログインに使用</li>
+        <li>Cloudflare Web Analytics：アクセス解析に使用</li>
+        <li>Google Fonts：画面の文字の表示に使用</li>
+        <li>GitHub Pages：本アプリのファイルの配信に使用</li>
+      </ul>
+      <p>これらのサービスでは、通信のためにIPアドレスなどの情報が各社に送られることがあります。各社での取り扱いは、それぞれのプライバシーポリシーをご確認ください。</p>
+    </section>
+
+    <section>
+      <h2><span class="no">07</span>利用目的</h2>
+      <p>保存した情報は、本アプリの機能（旅行の保存・共同編集・表示）の提供と、不具合の調査・改善のためだけに使います。旅行の内容を広告に使ったり、第三者に販売したりすることはありません。法令にもとづく場合を除き、第三者に提供することもありません。</p>
+    </section>
+
+    <section>
+      <h2><span class="no">08</span>データの削除</h2>
+      <ul class="dots">
+        <li><b>ひとりで使う旅行：</b>旅行の「…」→「削除」、または設定の「すべてのデータを削除」で消えます</li>
+        <li><b>みんなで編集している旅行：</b>旅行をつくった人が「みんなの旅行を削除」を押すと、サーバーから削除され、メンバー全員の画面からも消えます。メンバーが「この旅行から抜ける」を押しても、サーバー上の旅行は消えません</li>
+        <li>つくった人が端末を変えた・アプリのデータを消したなどで削除できなくなった場合は、お問い合わせください（招待リンクを添えてください）</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2><span class="no">09</span>安全のための取り組み</h2>
+      <p>サーバーに保存した旅行は、招待リンクに含まれる推測できないIDを知らないと読み書きできないように設定しています。旅行の一覧を取得することはできません。ただし、インターネット上のサービスである以上、完全な安全を保証することはできません。</p>
+    </section>
+
+    <section>
+      <h2><span class="no">10</span>このポリシーの変更</h2>
+      <p>機能の追加などにあわせて、このポリシーを変更することがあります。変更したときは、このページで内容と日付をお知らせします。</p>
+    </section>
+
+    <p class="dates">制定 2026.10.11</p>
+  </main>
+
+  <footer class="foot">
+    つくったのは チップ商会 開発部<br>
+    <a href="../guide/">使い方</a>
+    <a href="https://chipshokai.com" target="_blank" rel="noopener">公式サイト</a>
+    <a href="https://x.com/chip_shokai" target="_blank" rel="noopener">X</a>
+  </footer>
+</div>
+</body>
+</html>

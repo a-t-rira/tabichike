@@ -10,7 +10,7 @@ export function showConversionSheet(trip) {
   const dialog = document.createElement("dialog");
   dialog.className = "bottom-sheet collab-sheet";
   const nicknameField = hasNickname() ? "" : `<label>ニックネーム（空でもOK）<input name="nickname" maxlength="20" placeholder="例：てん" value="${escapeHTML(getNickname())}"></label>`;
-  dialog.innerHTML = `<h2>みんなで編集する <small class="beta-label">BETA</small></h2><p class="sheet-intro">この旅行をサーバーに保存して、招待した人と一緒に編集できるようにします。招待リンクを知っている人は、誰でも見たり編集したりできます。</p><form class="sheet-form">${nicknameField}<p class="sheet-error" aria-live="polite"></p><button class="primary-button" type="submit">サーバーに保存して招待する</button><button class="secondary-button sheet-close" type="button">キャンセル</button></form>`;
+  dialog.innerHTML = `<h2>みんなで編集する <small class="beta-label">BETA</small></h2><p class="sheet-intro">この旅行をサーバーに保存して、招待した人と一緒に編集できるようにします。招待リンクを知っている人は、誰でも見たり編集したりできます。</p><a class="collab-privacy-link" href="/privacy/">プライバシーポリシー</a><form class="sheet-form">${nicknameField}<p class="sheet-error" aria-live="polite"></p><button class="primary-button" type="submit">サーバーに保存して招待する</button><button class="secondary-button sheet-close" type="button">キャンセル</button></form>`;
   document.body.append(dialog); dialog.showModal();
   dialog.querySelector(".sheet-close").onclick = () => dialog.close();
   dialog.querySelector("form").onsubmit = async (event) => {

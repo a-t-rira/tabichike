@@ -7,7 +7,7 @@ import { confirmDialog } from "../utils/dialog.js";
 import { toast } from "../utils/toast.js";
 import { getShareTokenFromLink } from "../utils/share.js";
 import { openTutorial } from "./onboarding.js";
-import { disableBeta, getNickname, saveNickname, isBetaEnabled } from "../collab/local.js";
+import { getNickname, saveNickname } from "../collab/local.js";
 
 export function renderSettings(data) {
   const standalone = matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
@@ -15,16 +15,14 @@ export function renderSettings(data) {
     <section class="settings-card"><h2>使い方</h2><div class="settings-actions"><a class="secondary-button" href="/guide/">使い方ガイドを見る</a><button class="secondary-button" type="button" data-reopen-tutorial>チュートリアルをもう一度見る</button></div></section>
     <section class="settings-card"><h2>データのバックアップ</h2><p>データはこの端末のブラウザの中だけに保存されています。ブラウザのデータを消すと旅行も消えるので、ときどき書き出して控えを取っておきましょう。みんなで編集している旅行はサーバーに保存されているため、バックアップには含まれません。</p><div class="settings-actions"><button class="secondary-button" type="button" data-export>データを書き出す</button><button class="secondary-button" type="button" data-import>データを読み込む</button><input id="backup-file" type="file" accept="application/json,.json" hidden></div></section>
     <section class="settings-card"><h2>ニックネーム</h2><p>共同旅行で変更した人として表示されます。</p><form class="nickname-form"><input name="nickname" maxlength="20" placeholder="例：てん" value="${escapeHTML(getNickname())}" aria-label="ニックネーム"><button class="secondary-button" type="submit">保存</button></form></section>
-    ${isBetaEnabled() ? `<section class="settings-card"><h2>試験中の機能</h2><p>共同編集の試験機能をこの端末で非表示にします。</p><button class="secondary-button" type="button" data-disable-beta>試験中の機能をオフにする</button></section>` : ""}
     <section class="settings-card"><h2>共有リンクから取り込む</h2><p>ホーム画面に追加したたびチケは、Safariとは別にデータを保存しています。LINEなどで受け取ったリンクをSafariで開いた場合は、ここにリンクを貼り付けると取り込めます。</p><form class="share-link-form"><div><input name="shareLink" aria-label="共有リンクを貼り付け" placeholder="共有リンクを貼り付け"><button class="primary-button" type="submit">開く</button></div><p class="field-error" data-share-link-error aria-live="polite"></p></form></section>
     ${standalone ? "" : `<section class="settings-card"><h2>ホーム画面に追加する方法</h2><p>iPhoneのSafariで開き、共有ボタン →「ホーム画面に追加」を押すと、アプリのように使えます。</p></section>`}
     <section class="settings-card"><h2>すべてのデータを削除</h2><p>保存した旅行と関連データをすべて削除します。</p><button class="danger-button" type="button" data-clear>すべてのデータを削除</button></section>
-    <section class="settings-card"><h2>このアプリについて</h2><p>このアプリはチップ商会 開発部（AI社員）がつくりました。</p><p>アクセス数の計測に Cloudflare Web Analytics を使っています（Cookie は使わず、個人を特定する情報や旅行の内容は送信しません）</p><p class="version-label">v0.1.0</p><div class="settings-links"><a href="https://chipshokai.com" target="_blank" rel="noopener">公式サイト</a><a href="https://x.com/chip_shokai" target="_blank" rel="noopener">X</a><a href="https://note.com/chip_shokai" target="_blank" rel="noopener">note</a></div></section>
+    <section class="settings-card"><h2>このアプリについて</h2><p>このアプリはチップ商会 開発部（AI社員）がつくりました。</p><p>アクセス数の計測に Cloudflare Web Analytics を使っています（Cookie は使わず、個人を特定する情報や旅行の内容は送信しません）</p><p><a href="/privacy/">プライバシーポリシー</a></p><p class="version-label">v0.1.0</p><div class="settings-links"><a href="https://chipshokai.com" target="_blank" rel="noopener">公式サイト</a><a href="https://x.com/chip_shokai" target="_blank" rel="noopener">X</a><a href="https://note.com/chip_shokai" target="_blank" rel="noopener">note</a></div></section>
     ${footerMarkup()}
   </main><dialog class="share-sheet" id="settings-share"><h2>このアプリをシェア</h2><form method="dialog"><a data-share-x target="_blank" rel="noopener">Xでシェア</a><a data-share-line target="_blank" rel="noopener">LINEで送る</a><button type="button" data-share-copy>リンクをコピー</button><button class="share-close" value="cancel">閉じる</button></form></dialog></div>`;
   const file = document.getElementById("backup-file");
   document.querySelector(".nickname-form").addEventListener("submit", (event) => { event.preventDefault(); toast(saveNickname(event.currentTarget.elements.nickname.value) ? "ニックネームを保存しました" : "保存できませんでした"); });
-  document.querySelector("[data-disable-beta]")?.addEventListener("click", () => { disableBeta(); toast("試験中の機能をオフにしました"); renderSettings(data); });
   document.querySelector("[data-reopen-tutorial]").addEventListener("click", () => openTutorial({ force: true }));
   const shareLinkForm = document.querySelector(".share-link-form");
   shareLinkForm.addEventListener("submit", (event) => {
