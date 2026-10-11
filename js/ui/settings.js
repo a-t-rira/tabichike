@@ -30,10 +30,10 @@ export function renderSettings(data) {
   shareLinkForm.addEventListener("submit", (event) => {
     event.preventDefault();
     const pasted = shareLinkForm.elements.shareLink.value.trim();
+    const error = document.querySelector("[data-share-link-error]");
     const invite = pasted.match(/#\/j\/([A-Za-z0-9_-]{20,})/);
     if (invite) { error.textContent = ""; location.hash = `#/j/${encodeURIComponent(invite[1])}`; return; }
     const token = getShareTokenFromLink(pasted);
-    const error = document.querySelector("[data-share-link-error]");
     if (!token) { error.textContent = "たびチケの共有リンクではないようです"; return; }
     error.textContent = "";
     location.hash = `#/s/${token}`;

@@ -64,7 +64,7 @@ function route() {
       if (parts[2] === "shiori") { lastRoute = hash; window.onbeforeunload = null; openCollaborativeDetail(parts[1], "shiori"); return; }
       const tab = parts[2] === "packing" ? "packing" : parts[2] === "expenses" ? "expenses" : "itinerary";
       lastRoute = hash; window.onbeforeunload = null;
-      openCollaborativeDetail(parts[1], tab); return;
+      openCollaborativeDetail(parts[1], tab, joined); return;
     }
     const trip = data.trips.find((candidate) => candidate.id === parts[1]);
     if (!trip) { missingTrip(); return; }

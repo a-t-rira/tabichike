@@ -177,7 +177,7 @@ Spark プランの無料枠（1日あたり読み取り5万回・書き込み2�
   - `ニックネーム` の項目を追加（変更可）
   - 「このアプリについて」の解析の説明の下に `プライバシーポリシー` へのリンク（`/privacy/`）
 - **アクセス解析**：`#/j/` で開いたときも Cloudflare Web Analytics を読み込まない（`#/s/` と同じ扱い）
-- **Service Worker**：`gstatic.com/firebasejs` と `firestore.googleapis.com` などFirebaseへの通信はキャッシュしない（SDK自身のオフライン保存に任せる）
+- **Service Worker**：`www.gstatic.com/firebasejs/` の固定バージョンSDKファイルは、共同編集で読み込まれたときにキャッシュしてオフライン時も利用できるようにする。`firestore.googleapis.com`・`identitytoolkit.googleapis.com`・`securetoken.googleapis.com`・`firebase.googleapis.com` への通信はキャッシュせずネットワークへ流す（SDK自身のオフライン保存に任せる）
 - **ガイド（/guide/）**：文面の更新はオーナー側で用意する。届くまで変更しない
 
 ---

@@ -218,8 +218,6 @@ body:has(.detail-page) { background-color:var(--c-paper);background-image:radial
 .collab-sheet .settings-actions {display:grid;}
 .collab-sheet .settings-actions>a,.collab-sheet .settings-actions>button {width:100%;min-height:46px;display:flex;align-items:center;justify-content:center;text-decoration:none;}
 .nickname-form {grid-template-columns:minmax(0,1fr) auto;align-items:center;}
-.is-collaborative .packing-actions,.is-collaborative .item-menu,.is-collaborative .empty-actions,.is-collaborative .budget-link,.is-collaborative [data-add],.is-collaborative [data-basic] {display:none!important;}
-.is-collaborative .expense-row {cursor:default;}
 .join-heading {margin:12px 0 16px;text-align:center;font-size:19px;font-weight:900;}
 .join-ticket {pointer-events:none;}
 .join-form {margin-top:16px;}

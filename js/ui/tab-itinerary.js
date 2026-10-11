@@ -29,7 +29,7 @@ export function renderItinerary(trip, data, rerender, target, autoScroll = true,
     return `<section class="day ${date === today ? "is-today" : ""}" data-day="${date}"><div class="day-head"><div class="day-no"><span class="k">DAY</span><span class="n">${index + 1}</span></div><div class="day-date">${escapeHTML(formatShortDate(date))}</div>${date === today ? `<span class="today-badge">今日</span>` : ""}${allDone ? `<span class="day-complete">DAY COMPLETE</span>` : ""}</div>${dayItems.length ? `<div class="timeline">${dayItems.map((item) => itemCard(item, date, item === futureToday, today)).join("")}</div>` : `<div class="empty-day">予定はまだありません<br><button type="button" data-add-item="${date}">＋ この日に追加</button></div>`}</section>`;
   }).join("");
   const add = (date = null, item = null) => openItemDialog(trip, data, days, date, item, rerender, collaboration);
-  target.onclick = async (event) => {
+  target.onclick = (event) => {
     const button = event.target.closest("[data-add-item]"); if (button) { add(button.dataset.addItem || null); return; }
     const stamp = event.target.closest(".go-btn,.visited");
     if (stamp) {
@@ -38,10 +38,9 @@ export function renderItinerary(trip, data, rerender, target, autoScroll = true,
       const section = stamp.closest(".day"); const sectionItems = items.filter((entry) => entry.date === section.dataset.day);
       const completedNow = !removing && sectionItems.length && sectionItems.every((entry) => entry.done);
       if (collaboration) {
-        try { await collaboration.saveItem(item); }
-        catch { item.done = removing; toast("いまサーバーが混み合っているため保存できませんでした。時間をおいてお試しください"); rerender(); return; }
+        collaboration.saveItem(item).catch(() => { item.done = removing; toast("いまサーバーが混み合っているため保存できませんでした。時間をおいてお試しください"); rerender(); });
         rerender();
-        if (removing) toast("スタンプを外しました", "元に戻す", async () => { item.done = true; try { await collaboration.saveItem(item); } catch { item.done = false; toast("いまサーバーが混み合っているため保存できませんでした。時間をおいてお試しください"); } rerender(); });
+        if (removing) toast("スタンプを外しました", "元に戻す", () => { item.done = true; collaboration.saveItem(item).catch(() => { item.done = false; toast("いまサーバーが混み合っているため保存できませんでした。時間をおいてお試しください"); rerender(); }); rerender(); });
         else if (completedNow && !reduceMotion) setTimeout(() => document.querySelector(`[data-day="${section.dataset.day}"] .day-complete`)?.classList.add("press"), 750);
         if (!removing && !reduceMotion) document.querySelector(`.visited[data-id="${item.id}"]`)?.classList.add("press");
       } else if (saveData({ ...data, trips: data.trips.map((t) => t.id === trip.id ? trip : t) })) {
@@ -79,12 +78,12 @@ async function openItemDialog(trip, data, days, date, item, rerender, collaborat
   document.body.append(dialog); dialog.showModal(); const form = dialog.querySelector("form"); let category = item?.category || "sight";
   const timeInput = form.elements.time; timeInput.oninput = () => { form.elements.endTime.disabled = !timeInput.value; if (!timeInput.value) form.elements.endTime.value = ""; };
   dialog.querySelectorAll("[data-category]").forEach((button) => button.onclick = () => { category = button.dataset.category; dialog.querySelectorAll("[data-category]").forEach((b) => b.setAttribute("aria-pressed", String(b === button))); });
-  form.onsubmit = async (event) => { event.preventDefault(); const error = !form.elements.title.value.trim() ? "やることを入れてください" : timeInput.value && form.elements.endTime.value && form.elements.endTime.value <= timeInput.value ? "終了時刻は開始時刻より後にしてください" : ""; form.querySelector(".sheet-error").textContent = error; if (error) return;
+  form.onsubmit = (event) => { event.preventDefault(); const error = !form.elements.title.value.trim() ? "やることを入れてください" : timeInput.value && form.elements.endTime.value && form.elements.endTime.value <= timeInput.value ? "終了時刻は開始時刻より後にしてください" : ""; form.querySelector(".sheet-error").textContent = error; if (error) return;
     const nextItem = { id: item?.id || createId(), date: form.elements.date.value, time: timeInput.value || null, endTime: timeInput.value ? form.elements.endTime.value || null : null, title: form.elements.title.value.trim(), category, place: form.elements.place.value.trim(), memo: form.elements.memo.value.trim(), done: item?.done || false };
-    if (collaboration) { const submit = form.querySelector('[type="submit"]'); submit.disabled = true; try { await collaboration.saveItem(nextItem); dialog.close(); } catch { submit.disabled = false; form.querySelector(".sheet-error").textContent = "いまサーバーが混み合っているため保存できませんでした。時間をおいてお試しください"; } }
+    if (collaboration) { collaboration.saveItem(nextItem).catch(() => toast("いまサーバーが混み合っているため保存できませんでした。時間をおいてお試しください")); dialog.close(); }
     else { trip.items = item ? trip.items.map((row) => row.id === item.id ? nextItem : row) : [...trip.items, nextItem]; persist(trip,data,rerender); dialog.close(); }
   };
-  form.querySelector("[data-remove]")?.addEventListener("click", async () => { if (await confirmDialog({title:"この予定を削除しますか？", confirmLabel:"削除する", danger:true})) { if (collaboration) { try { await collaboration.deleteItem(item.id); dialog.close(); } catch { form.querySelector(".sheet-error").textContent = "いまサーバーが混み合っているため保存できませんでした。時間をおいてお試しください"; } } else { trip.items = trip.items.filter((row) => row.id !== item.id); persist(trip,data,rerender); dialog.close(); } } });
+  form.querySelector("[data-remove]")?.addEventListener("click", async () => { if (await confirmDialog({title:"この予定を削除しますか？", confirmLabel:"削除する", danger:true})) { if (collaboration) { collaboration.deleteItem(item.id).catch(() => toast("いまサーバーが混み合っているため保存できませんでした。時間をおいてお試しください")); dialog.close(); } else { trip.items = trip.items.filter((row) => row.id !== item.id); persist(trip,data,rerender); dialog.close(); } } });
   dialog.addEventListener("click", (e) => { if (e.target === dialog) dialog.close(); }); dialog.addEventListener("close", () => dialog.remove(), { once:true });
 }
 function persist(trip,data,rerender) { trip.updatedAt = new Date().toISOString(); if (saveData({...data,trips:data.trips.map((t)=>t.id===trip.id?trip:t)})) rerender(); }

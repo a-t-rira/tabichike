@@ -9,6 +9,7 @@ import { renderExpenses } from "./tab-expenses.js";
 import { showTripShareSheet } from "./share-sheet.js";
 import { isBetaEnabled } from "../collab/local.js";
 import { showConversionSheet, showInviteSheet } from "./collab-sheet.js";
+import { toast } from "../utils/toast.js";
 
 const tabs = [["itinerary", "旅程", ""], ["packing", "持ち物", "packing"], ["expenses", "費用", "expenses"]];
 
@@ -28,16 +29,26 @@ export function renderTripDetail(trip, tab = "itinerary", data = null, autoScrol
       <section id="tab-content" class="detail-tab-content"></section>
       <a class="primary-button shiori-link" href="#/trip/${encodeURIComponent(trip.id)}/shiori"><span aria-hidden="true">📖</span> しおりを見る</a>
     </main>
-    <div id="trip-menu-popover" class="trip-menu-popover" hidden>${collaborative ? `<button type="button" id="invite-members">メンバーを招待</button>` : `${isBetaEnabled() ? `<button type="button" id="enable-collab">みんなで編集する <small class="beta-label">BETA</small></button>` : ""}<a href="#/trip/${encodeURIComponent(trip.id)}/edit">旅行を編集</a>`}<button type="button" id="share-trip">旅行を共有</button><a href="#/trip/${encodeURIComponent(trip.id)}/shiori">しおりを見る</a>${collaborative ? "" : `<button type="button" id="delete-trip" class="menu-danger">この旅行を削除</button>`}</div>
+    <div id="trip-menu-popover" class="trip-menu-popover" hidden>${collaborative ? `<button type="button" id="invite-members">メンバーを招待</button><button type="button" id="leave-collab">この旅行から抜ける</button><button type="button" id="copy-collab">ひとりの旅行にもどす</button>${collaborative.isOwner ? `<button type="button" id="delete-collab" class="menu-danger">みんなの旅行を削除</button>` : ""}` : `${isBetaEnabled() ? `<button type="button" id="enable-collab">みんなで編集する <small class="beta-label">BETA</small></button>` : ""}<a href="#/trip/${encodeURIComponent(trip.id)}/edit">旅行を編集</a>`}<button type="button" id="share-trip">旅行を共有</button><a href="#/trip/${encodeURIComponent(trip.id)}/shiori">しおりを見る</a>${collaborative ? "" : `<button type="button" id="delete-trip" class="menu-danger">この旅行を削除</button>`}</div>
   </div>`;
   const container = document.getElementById("tab-content");
-  if (tab === "packing") renderPacking(trip, rootData, () => renderTripDetail(trip, tab, rootData, false, collaborative), container);
-  else if (tab === "expenses") renderExpenses(trip, rootData, () => renderTripDetail(trip, tab, rootData, false, collaborative), container);
+  if (tab === "packing") renderPacking(trip, rootData, () => renderTripDetail(trip, tab, rootData, false, collaborative), container, collaborative);
+  else if (tab === "expenses") renderExpenses(trip, rootData, () => renderTripDetail(trip, tab, rootData, false, collaborative), container, collaborative);
   else renderItinerary(trip, rootData, () => renderTripDetail(trip, tab, rootData, false, collaborative), container, autoScroll, collaborative);
   const button = document.getElementById("trip-menu");
   button.addEventListener("click", () => { const popover = document.getElementById("trip-menu-popover"); popover.hidden = !popover.hidden; button.setAttribute("aria-expanded", String(!popover.hidden)); });
   document.getElementById("share-trip").addEventListener("click", () => { document.getElementById("trip-menu-popover").hidden = true; showTripShareSheet(trip); });
   document.getElementById("invite-members")?.addEventListener("click", () => { document.getElementById("trip-menu-popover").hidden = true; showInviteSheet(trip.id, trip); });
+  document.getElementById("leave-collab")?.addEventListener("click", async () => {
+    if (!await confirmDialog({ title: "この旅行から抜けますか？", message: "ほかのメンバーの旅行は消えません。招待リンクがあれば、また参加できます。", confirmLabel: "抜ける" })) return;
+    collaborative.leave(); location.hash = "#/";
+  });
+  document.getElementById("copy-collab")?.addEventListener("click", () => { if (collaborative.copySolo()) location.hash = "#/"; });
+  document.getElementById("delete-collab")?.addEventListener("click", async () => {
+    if (!await confirmDialog({ title: "この旅行を全員の端末から削除しますか？", message: "メンバー全員の画面からも消えます。元に戻せません。", confirmLabel: "削除する", danger: true })) return;
+    collaborative.leave(); location.hash = "#/";
+    collaborative.deleteTrip().catch(() => { collaborative.restore(); toast("いまサーバーが混み合っているため保存できませんでした。時間をおいてお試しください"); location.hash = `#/trip/${encodeURIComponent(trip.id)}`; });
+  });
   document.getElementById("enable-collab")?.addEventListener("click", () => { document.getElementById("trip-menu-popover").hidden = true; showConversionSheet(trip); });
   document.getElementById("delete-trip")?.addEventListener("click", async () => {
     if (await confirmDialog({ title: "この旅行を削除しますか？", message: `「${trip.title}」の旅程・持ち物・費用がすべて消えます。元に戻せません。`, confirmLabel: "削除する", danger: true })) document.dispatchEvent(new CustomEvent("tabichike:delete-trip", { detail: trip.id }));

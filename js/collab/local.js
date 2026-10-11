@@ -47,6 +47,7 @@ export function upsertJoinedTrip(trip, { joinedAt = new Date().toISOString() } =
     startDate: trip.startDate || "",
     endDate: trip.endDate || "",
     color: trip.color || "sunset",
+    isOwner: Boolean(trip.isOwner),
   };
   state.trips = [...state.trips.filter((candidate) => candidate.id !== trip.id), entry];
   return writeCollabState(state);

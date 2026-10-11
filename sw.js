@@ -1,4 +1,4 @@
-const CACHE_NAME = "tabichike-v0.3.0";
+const CACHE_NAME = "tabichike-v0.4.0";
 const APP_FILES = [
   "./",
   "./index.html",
@@ -71,7 +71,18 @@ self.addEventListener("message", (event) => {
 self.addEventListener("fetch", (event) => {
   const requestURL = new URL(event.request.url);
   if (requestURL.hostname === "static.cloudflareinsights.com" || requestURL.hostname === "cloudflareinsights.com" || requestURL.hostname.endsWith(".cloudflareinsights.com")) return;
-  if ((requestURL.hostname === "www.gstatic.com" && requestURL.pathname.startsWith("/firebasejs/")) || ["firestore.googleapis.com", "identitytoolkit.googleapis.com", "securetoken.googleapis.com", "firebase.googleapis.com"].includes(requestURL.hostname)) return;
+  if (["firestore.googleapis.com", "identitytoolkit.googleapis.com", "securetoken.googleapis.com", "firebase.googleapis.com"].includes(requestURL.hostname)) return;
+  if (requestURL.hostname === "www.gstatic.com" && requestURL.pathname.startsWith("/firebasejs/")) {
+    event.respondWith((async () => {
+      const cache = await caches.open(CACHE_NAME);
+      const cached = await cache.match(event.request);
+      if (cached) return cached;
+      const response = await fetch(event.request);
+      if (response.ok) await cache.put(event.request, response.clone());
+      return response;
+    })());
+    return;
+  }
   if (event.request.method !== "GET" || requestURL.origin !== self.location.origin) return;
   event.respondWith((async () => {
     const cache = await caches.open(CACHE_NAME);
