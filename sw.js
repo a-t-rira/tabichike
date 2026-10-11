@@ -1,4 +1,4 @@
-const CACHE_NAME = "tabichike-v0.5.0";
+const CACHE_NAME = "tabichike-v0.6.0";
 const APP_FILES = [
   "./",
   "./index.html",
