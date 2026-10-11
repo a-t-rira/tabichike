@@ -2,7 +2,8 @@ import { createId } from "../models.js";
 import { getClient } from "./client.js";
 
 const ITEM_FIELDS = ["date", "time", "endTime", "title", "category", "place", "memo", "done"];
-const EXPENSE_FIELDS = ["date", "title", "amount", "category", "memo"];
+const PACKING_CATEGORIES = ["valuables", "devices", "clothes", "toiletries", "other"];
+const EXPENSE_CATEGORIES = ["move", "stay", "food", "sight", "shopping", "other"];
 const CHUNK_SIZE = 450;
 
 function pick(source, fields) {
@@ -83,7 +84,7 @@ export async function readCollaborativeTrip(tripId) {
   const tripSnapshot = await sdk.getDoc(refs.parent);
   const trip = convertTripSnapshot(tripSnapshot);
   if (!trip) return null;
-  return { ...trip, items: [], packing: [], expenses: [] };
+  return { ...trip, isOwner: trip.ownerUid === client.uid, items: [], packing: [], expenses: [] };
 }
 
 export async function refreshCollaborativeSummaries(tripIds) {
@@ -97,15 +98,15 @@ export async function watchCollaborativeTrip(tripId, onValue, onError) {
   const client = await getClient();
   const sdk = client.firestore;
   const refs = refsFor(client, tripId, sdk);
-  const state = { trip: undefined, items: undefined, packing: undefined, expenses: undefined };
+  const state = { trip: undefined, tripFromCache: true, items: undefined, packing: undefined, expenses: undefined };
   let closed = false;
   const notify = () => {
     if (closed || Object.values(state).some((value) => value === undefined)) return;
-    if (!state.trip) { onValue(null); return; }
+    if (!state.trip) { onValue(null, { fromCache: state.tripFromCache }); return; }
     onValue({ ...state.trip, items: state.items, packing: state.packing, expenses: state.expenses });
   };
   const unsubs = [
-    sdk.onSnapshot(refs.parent, (snapshot) => { state.trip = convertTripSnapshot(snapshot); notify(); }, onError),
+    sdk.onSnapshot(refs.parent, (snapshot) => { state.trip = convertTripSnapshot(snapshot); state.tripFromCache = snapshot.metadata.fromCache; notify(); }, onError),
     sdk.onSnapshot(refs.items, (snapshot) => { state.items = convertDoc(snapshot); notify(); }, onError),
     sdk.onSnapshot(refs.packing, (snapshot) => { state.packing = convertDoc(snapshot); notify(); }, onError),
     sdk.onSnapshot(refs.expenses, (snapshot) => { state.expenses = convertDoc(snapshot); notify(); }, onError),
@@ -118,13 +119,59 @@ export async function saveCollaborativeItem(tripId, item, nickname) {
   const sdk = client.firestore;
   const refs = refsFor(client, tripId, sdk);
   const data = { ...pick(item, ITEM_FIELDS), done: Boolean(item.done), updatedAt: sdk.serverTimestamp(), updatedBy: savedBy(nickname) };
-  await sdk.setDoc(sdk.doc(refs.items, item.id), data);
-  await sdk.updateDoc(refs.parent, { updatedAt: sdk.serverTimestamp(), updatedBy: savedBy(nickname) });
+  const batch = sdk.writeBatch(client.db);
+  batch.set(sdk.doc(refs.items, item.id), data);
+  batch.update(refs.parent, tripUpdate(sdk, nickname));
+  return batch.commit();
 }
 
 export async function deleteCollaborativeItem(tripId, itemId, nickname) {
   const client = await getClient();
   const sdk = client.firestore;
-  await sdk.deleteDoc(sdk.doc(client.db, "trips", tripId, "items", itemId));
-  await sdk.updateDoc(sdk.doc(client.db, "trips", tripId), { updatedAt: sdk.serverTimestamp(), updatedBy: savedBy(nickname) });
+  const parent = sdk.doc(client.db, "trips", tripId); const batch = sdk.writeBatch(client.db);
+  batch.delete(sdk.doc(client.db, "trips", tripId, "items", itemId)); batch.update(parent, tripUpdate(sdk, nickname));
+  return batch.commit();
+}
+
+export async function saveCollaborativePacking(tripId, item, nickname) {
+  const client = await getClient(); const sdk = client.firestore; const refs = refsFor(client, tripId, sdk);
+  const data = { name: String(item.name || "").trim(), category: PACKING_CATEGORIES.includes(item.category) ? item.category : "other", updatedAt: sdk.serverTimestamp(), updatedBy: savedBy(nickname) };
+  const batch = sdk.writeBatch(client.db); batch.set(sdk.doc(refs.packing, item.id || createId()), data); batch.update(refs.parent, tripUpdate(sdk, nickname)); return batch.commit();
+}
+
+export async function deleteCollaborativePacking(tripId, itemId, nickname) {
+  const client = await getClient(); const sdk = client.firestore;
+  const parent = sdk.doc(client.db, "trips", tripId); const batch = sdk.writeBatch(client.db); batch.delete(sdk.doc(client.db, "trips", tripId, "packing", itemId)); batch.update(parent, tripUpdate(sdk, nickname)); return batch.commit();
+}
+
+export async function saveCollaborativeExpense(tripId, item, nickname) {
+  const client = await getClient(); const sdk = client.firestore; const refs = refsFor(client, tripId, sdk);
+  const data = { ...(item.date !== undefined ? { date: item.date || null } : {}), title: String(item.title || "").trim(), amount: Number(item.amount), category: EXPENSE_CATEGORIES.includes(item.category) ? item.category : "other", memo: String(item.memo || ""), updatedAt: sdk.serverTimestamp(), updatedBy: savedBy(nickname) };
+  const batch = sdk.writeBatch(client.db); batch.set(sdk.doc(refs.expenses, item.id || createId()), data); batch.update(refs.parent, tripUpdate(sdk, nickname)); return batch.commit();
+}
+
+export async function deleteCollaborativeExpense(tripId, itemId, nickname) {
+  const client = await getClient(); const sdk = client.firestore;
+  const parent = sdk.doc(client.db, "trips", tripId); const batch = sdk.writeBatch(client.db); batch.delete(sdk.doc(client.db, "trips", tripId, "expenses", itemId)); batch.update(parent, tripUpdate(sdk, nickname)); return batch.commit();
+}
+
+export async function deleteCollaborativeTrip(tripId, ownerUid) {
+  const client = await getClient(); const sdk = client.firestore;
+  if (client.uid !== ownerUid) throw new Error("Only the trip owner can delete it");
+  const refs = refsFor(client, tripId, sdk);
+  const snapshots = await Promise.all([refs.items, refs.packing, refs.expenses].map((collectionRef) => sdk.getDocs(collectionRef)));
+  const writes = [];
+  for (const snapshot of snapshots) {
+    for (let offset = 0; offset < snapshot.docs.length; offset += CHUNK_SIZE) {
+      const batch = sdk.writeBatch(client.db);
+      snapshot.docs.slice(offset, offset + CHUNK_SIZE).forEach((entry) => batch.delete(entry.ref));
+      writes.push(batch.commit());
+    }
+  }
+  writes.push(sdk.deleteDoc(refs.parent));
+  return Promise.all(writes);
+}
+
+function tripUpdate(sdk, nickname) {
+  return { updatedAt: sdk.serverTimestamp(), updatedBy: savedBy(nickname) };
 }

@@ -21,7 +21,7 @@ export function showConversionSheet(trip) {
     try {
       if (!navigator.onLine) throw new Error("Offline");
       const result = await createCollaborativeTrip(trip, nickname);
-      const collab = { ...trip, ...result.header, id: result.id, collaborative: true };
+      const collab = { ...trip, ...result.header, id: result.id, collaborative: true, isOwner: true };
       const checks = Object.fromEntries((trip.packing || []).filter((item) => item.checked).map((item) => [item.id, true]));
       const registered = upsertJoinedTrip(collab) && storeTripChecks(result.id, checks);
       if (!registered) { removeJoinedTrip(result.id); throw new Error("Could not save the local joined trip"); }
