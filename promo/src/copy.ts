@@ -1,0 +1,40 @@
+export const COPY = {
+  fps: 30,
+  seconds: 18,
+  scenes: [
+    { id: 'hook', from: 0, duration: 60, seconds: 2 },
+    { id: 'ticket', from: 60, duration: 45, seconds: 1.5 },
+    { id: 'board', from: 105, duration: 90, seconds: 3 },
+    { id: 'visited', from: 195, duration: 120, seconds: 4 },
+    { id: 'passport', from: 315, duration: 75, seconds: 2.5 },
+    { id: 'collab', from: 390, duration: 60, seconds: 2 },
+    { id: 'brand', from: 450, duration: 90, seconds: 3 },
+  ],
+  reel: {
+    hook1: '旅行の準備、', hook2: 'バラバラすぎない？',
+    merge: '1枚のチケットに。',
+    boardTitle: 'DEPARTURES', boardPlace: 'KYOTO 京都', boardDays: 'あと 5 日',
+    visitedLine: '行った場所にスタンプ。',
+    passportLine: 'しおりはパスポートに。',
+    collabLine: 'みんなで編集。',
+    brand: 'たびチケ', free: '無料・登録不要', link: 'プロフィールのリンクから',
+  },
+  sample: {
+    trip: '京都 紅葉さんぽ',
+    schedule: [
+      { time: '08:12', title: 'のぞみで京都へ', category: '移動' },
+      { time: '09:30', title: '伏見稲荷大社', category: '観光' },
+      { time: '12:30', title: '錦市場で食べ歩き', category: '食事' },
+      { time: '15:00', title: '嵐山・竹林の小径', category: '観光' },
+    ],
+    avatars: ['た', 'は', 'け'],
+  },
+  posts: [
+    { title: ['旅行アプリ、', '発券しました'], body: '旅程・持ち物・費用・しおりを1枚のチケットに', art: 'ticket', accent: '#FF6B3D' },
+    { title: ['出発案内板で', 'カウントダウン'], body: '開くと空港の案内板に「あと◯日」。旅行中は「◯日目」に切り替わります', art: 'board', accent: '#10192E' },
+    { title: ['行った場所に', 'スタンプ'], body: '当日、予定の横の「行った？」を押すとVISITEDのスタンプ。全部押すとDAY COMPLETE', art: 'visited', accent: '#D7263D' },
+    { title: ['パスポート風の', 'しおり'], body: '旅程・持ち物・予算・メモをまとめて、印刷やPDFにもできます', art: 'passport', accent: '#1B2A4A' },
+    { title: ['みんなで', '編集できる'], body: '招待リンクを送ると、一緒に行く人と同じ旅行を編集できます（BETA）', art: 'collab', accent: '#2EC4A6' },
+    { title: ['次の旅行に', '発券してね'], body: '無料・登録不要。アプリはプロフィールのリンクから', art: 'brand', accent: '#FF6B3D' },
+  ],
+} as const;

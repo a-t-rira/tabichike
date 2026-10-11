@@ -1,0 +1,27 @@
+{
+  "name": "tabichike-promo",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "studio": "remotion studio src/index.tsx",
+    "render:reel": "remotion render src/index.tsx TabichikeReel out/tabichike-reel.mp4 --codec=h264 --crf=18",
+    "render:cover": "remotion still src/index.tsx ReelCover out/reel-cover.png",
+    "render:posts": "npm run render:post:01 && npm run render:post:02 && npm run render:post:03 && npm run render:post:04 && npm run render:post:05 && npm run render:post:06",
+    "render:post:01": "remotion still src/index.tsx Post01 out/post-01.png",
+    "render:post:02": "remotion still src/index.tsx Post02 out/post-02.png",
+    "render:post:03": "remotion still src/index.tsx Post03 out/post-03.png",
+    "render:post:04": "remotion still src/index.tsx Post04 out/post-04.png",
+    "render:post:05": "remotion still src/index.tsx Post05 out/post-05.png",
+    "render:post:06": "remotion still src/index.tsx Post06 out/post-06.png",
+    "render:all": "npm run render:reel && npm run render:cover && npm run render:posts"
+  },
+  "dependencies": {
+    "@remotion/google-fonts": "4.0.534",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "remotion": "4.0.534"
+  },
+  "devDependencies": {
+    "@remotion/cli": "4.0.534"
+  }
+}

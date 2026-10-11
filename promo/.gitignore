@@ -1,0 +1,11 @@
+node_modules/
+.remotion/
+.pnpm-store/
+.render-bin/
+.tmp/
+.node-realpath-polyfill.cjs
+out/debug.mp4
+out/default-debug.mp4
+out/ffmpeg-check.mp4
+out/frame.jpg
+out/pipe-test.mp4
