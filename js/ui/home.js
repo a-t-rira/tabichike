@@ -67,7 +67,8 @@ export function renderHome(data) {
   });
   document.querySelectorAll("[data-href]").forEach((element) => {
     element.addEventListener("click", (event) => {
-      if (event.target !== element && event.target.closest("button, a, summary, details")) return;
+      const interactive = event.target.closest("button, a, summary, details");
+      if (interactive && interactive !== element) return;
       location.hash = element.dataset.href;
     });
     element.addEventListener("keydown", (event) => {
